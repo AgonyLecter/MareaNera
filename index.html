@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#05070a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="screen-orientation" content="landscape">
+<link rel="manifest" href="manifest.json">
 <title>MAREA NERA — Capitolo I: Il Pescato</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,22 +95,67 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer}
 
 /* Fishing */
 #fishUI{position:fixed;inset:0;z-index:7;pointer-events:none}
-#fishHint{position:absolute;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:20px;text-align:center;text-shadow:0 0 8px #000,0 0 3px #000;width:90vw}
+#fishHint{position:absolute;left:50%;bottom:calc(132px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:20px;text-align:center;text-shadow:0 0 8px #000,0 0 3px #000;width:min(90vw,640px);transition:color .3s}
 #fishHint.alert{color:#ffdf8a;font-size:30px;font-family:'IM Fell English SC';animation:pulse .3s infinite alternate}
+#fishHint.soft{color:#cfc6b2;font-style:italic}
+#fishHint.weird{color:#a8e8c0;font-style:italic;text-shadow:0 0 10px #3f9,0 0 3px #000}
 @keyframes pulse{to{transform:translateX(-50%) scale(1.12)}}
-#powerWrap{position:absolute;left:50%;bottom:calc(120px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(60vw,320px);height:14px;border:1px solid #d9d2c388;background:#0009}
-#powerBar{height:100%;width:0;background:linear-gradient(90deg,#6b5636,#e8c48a)}
-#reelWrap{position:absolute;right:calc(150px + env(safe-area-inset-right));top:50%;transform:translateY(-50%);display:flex;gap:6px;align-items:flex-end}
-#reelTrack{position:relative;width:46px;height:min(46vh,300px);border:2px solid #6b5636;background:linear-gradient(#0a1a22cc,#02060acc);border-radius:3px;overflow:hidden}
-#reelZone{position:absolute;left:2px;right:2px;bottom:0;height:28%;background:#9fd08a44;border:1px solid #bff0a0aa;border-radius:2px}
-#reelZone.on{background:#b8f0a066}
-#reelFish{position:absolute;left:50%;width:30px;height:16px;margin-left:-15px;bottom:0;border-radius:50% 40% 40% 50%;background:#c9c2b0;box-shadow:0 0 6px #000}
-#reelFish:after{content:'';position:absolute;right:-8px;top:2px;border-left:10px solid #c9c2b0;border-top:6px solid transparent;border-bottom:6px solid transparent}
-#reelFish.weird{background:#7fd6a2;box-shadow:0 0 12px #3f9}
-#reelFish.weird:after{border-left-color:#7fd6a2}
-#reelProg{width:12px;height:min(46vh,300px);border:1px solid #6b5636;background:#0009;position:relative}
-#reelProgFill{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(#e8c48a,#8a6a3a)}
+#powerWrap{position:absolute;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(56vw,360px);height:18px;border:1px solid #d9d2c388;background:#000a;border-radius:9px;overflow:hidden}
+#powerSweet{position:absolute;top:0;bottom:0;left:72%;width:18%;background:linear-gradient(90deg,#e8c48a33,#ffd98a88,#e8c48a33);border-left:1px solid #ffe2a0;border-right:1px solid #ffe2a0}
+#powerBar{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#4a5a62,#9fb3c8)}
+#powerBar.hot{background:linear-gradient(90deg,#8a6a3a,#ffd98a)}
+#reelWrap{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(50vw,460px);padding:10px 14px 12px;
+  background:linear-gradient(#0b0f12d8,#050708e8);border:1px solid #6b5636;border-radius:6px;box-shadow:0 8px 30px #000a;transition:border-color .15s,box-shadow .15s}
+#reelWrap.warn{border-color:#ffb060;box-shadow:0 0 24px #ff905066}
+#reelWrap.run{border-color:#e06a50;box-shadow:0 0 30px #e0503a77;animation:jit .09s infinite alternate}
+#reelWrap.calm{border-color:#9fd08a}
+#reelWrap.cursedR{border-color:#7fd6a2;box-shadow:0 0 30px #2f885588}
+@keyframes jit{to{transform:translateX(calc(-50% + 2px))}}
+#rState{font-family:'IM Fell English SC';text-align:center;font-size:24px;letter-spacing:3px;height:30px;color:#bfe8a8;text-shadow:0 0 10px #000}
+#reelWrap.warn #rState{color:#ffcf7a}#reelWrap.run #rState{color:#ff8a6a}#reelWrap.cursedR #rState{color:#a8f0c8}
+#rTrack{position:relative;height:30px;margin:6px 0 8px;border-bottom:1px dashed #d9d2c344}
+#rBoat{position:absolute;left:-4px;bottom:2px;font-size:20px;filter:grayscale(.6)}
+#rLine{position:absolute;left:18px;bottom:8px;height:1px;background:#d9d2c3aa;width:0}
+#rFish{position:absolute;bottom:4px;width:30px;height:15px;margin-left:-15px;border-radius:50% 40% 40% 50%;background:#c9c2b0;box-shadow:0 0 6px #000;transition:left .08s linear}
+#rFish:after{content:'';position:absolute;right:-8px;top:1px;border-left:10px solid currentColor;color:inherit;border-top:6px solid transparent;border-bottom:6px solid transparent;filter:brightness(1)}
+#rFish.weird{background:#7fd6a2!important;box-shadow:0 0 12px #3f9}
+#rFish.glitch{animation:gl .12s infinite steps(2)}
+@keyframes gl{50%{transform:translate(4px,-3px) scaleX(-1);filter:hue-rotate(120deg)}}
+#reelWrap.run #rFish{animation:shk .08s infinite alternate}
+@keyframes shk{to{transform:translate(0,-4px) rotate(-14deg)}}
+#rTen{position:relative;height:12px;border:1px solid #d9d2c355;border-radius:6px;background:#0009;overflow:hidden}
+#rTenFill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#6d9a5a,#e8c48a 60%,#e0503a);background-size:var(--bw,460px) 100%}
+#rTen.beat #rTenFill{background:#7fd6a2;animation:beat .9s infinite}
+@keyframes beat{0%,100%{opacity:.5}15%{opacity:1}30%{opacity:.6}45%{opacity:1}}
+#rTen span{position:absolute;right:6px;top:-1px;font-size:10px;letter-spacing:2px;opacity:.55;text-transform:uppercase}
+#rKnots{display:flex;justify-content:space-between;margin-top:5px;font-size:12px;color:#9a9284}
+#rKnots b{color:#e8c48a;font-weight:normal;letter-spacing:3px}
 #fishExit{position:absolute;top:calc(60px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right));pointer-events:auto}
+#pop{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%);z-index:9;pointer-events:none;font-family:'IM Fell English SC';font-size:clamp(26px,5vw,44px);letter-spacing:4px;color:#ffd98a;
+  text-shadow:0 0 18px #e8a04a,0 0 4px #000;opacity:0;white-space:nowrap}
+#pop.on{animation:popA 1.5s ease-out forwards}
+#pop.bad{color:#ff9a7a;text-shadow:0 0 16px #e0503a,0 0 4px #000}
+#pop.grn{color:#a8f0c8;text-shadow:0 0 18px #3f9,0 0 4px #000;font-family:'IM Fell English';font-style:italic}
+@keyframes popA{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}22%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
+#act[data-f=tira]{border-color:#9fd08a;color:#e4f5d8;box-shadow:0 0 22px #6d9a5a55,inset 0 0 18px #000}
+#act[data-f=molla]{border-color:#e06a50;color:#ffd8cc;background:radial-gradient(#4a1a12dd,#160806dd);box-shadow:0 0 26px #e0503a77,inset 0 0 18px #000}
+.stars{text-align:center;font-size:26px;letter-spacing:6px;color:#e8c48a;text-shadow:0 0 12px #e8a04a88;margin:4px 0}
+.stars i{color:#4a4034;font-style:normal;text-shadow:none}
+.kg{text-align:center;font-size:22px;color:#efe6d0;font-family:'IM Fell English SC';letter-spacing:2px}
+.rec{display:block;width:max-content;margin:6px auto 2px;padding:3px 12px;border:1px solid #e8c48a;color:#ffd98a;font-family:'IM Fell English SC';letter-spacing:3px;font-size:14px;border-radius:12px;animation:blink 1s infinite}
+#panel.catch{animation:pin .35s ease-out}
+@keyframes pin{from{transform:translate(-50%,-44%) scale(.9);opacity:0}}
+#panel.cursedP{border-color:#3f8a62;box-shadow:0 0 40px #2f885555,0 20px 60px #000e}
+#panel.cursedP h2{color:#a8f0c8}
+
+/* Rotazione */
+#rotate{position:fixed;inset:0;z-index:28;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:30px;pointer-events:auto}
+#rotate .ph{width:46px;height:78px;border:3px solid #d9d2c3;border-radius:8px;animation:rot 2.2s infinite ease-in-out}
+@keyframes rot{0%,20%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+#rotate .t{font-family:'IM Fell English SC';font-size:24px;letter-spacing:3px;color:#efe6d0}
+#rotate small{font-style:italic;color:#9a9284;font-size:15px}
+#rotate button{margin-top:12px;background:none;border:1px solid #6b5636;color:#9a9284;padding:8px 14px;font-size:14px;border-radius:3px}
+@media (orientation:portrait) and (pointer:coarse){body:not(.portraitOk) #rotate{display:flex}}
 
 /* Note */
 #note{position:fixed;inset:0;z-index:14;background:#000c;display:flex;align-items:center;justify-content:center;pointer-events:auto;padding:4vh 4vw}
@@ -131,7 +179,36 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer}
 #menuLists div div{text-align:center}
 #netState{position:fixed;bottom:8px;right:10px;font-size:12px;opacity:.45;z-index:17}
 #loading{position:fixed;inset:0;background:#000;z-index:30;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC';letter-spacing:4px;color:#8f877a}
-@media (max-width:600px){#hudTL{font-size:13px}#hudTL .big{font-size:16px}#reelWrap{right:calc(140px + env(safe-area-inset-right))}#dlgTxt{font-size:17px}}
+@media (max-width:600px){#hudTL{font-size:13px}#hudTL .big{font-size:16px}#dlgTxt{font-size:17px}}
+#menu .mL{display:flex;flex-direction:column;align-items:center}
+#menu .mb.sec#btnFull{font-size:14px;padding:8px;opacity:.8}
+@media (orientation:portrait){#fishHint{bottom:calc(250px + env(safe-area-inset-bottom))}#reelWrap{bottom:calc(150px + env(safe-area-inset-bottom));width:min(86vw,460px)}#powerWrap{bottom:calc(160px + env(safe-area-inset-bottom));width:70vw}}
+/* Orizzontale su telefono: schermi bassi */
+@media (max-height:520px){
+  #hudTL{font-size:13px;line-height:1.3}#hudTL .big{font-size:15px}
+  #compass{height:32px;width:min(38vw,340px)}.cmk{font-size:12px;top:1px}.cmk.card{top:8px}.cmk small{font-size:9px}
+  .icoBtn{width:34px;height:34px;font-size:15px}
+  #joy{width:112px;height:112px;left:calc(14px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom))}#knob{width:48px;height:48px;margin:-24px 0 0 -24px}
+  #act{width:92px;height:92px;font-size:15px;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom))}
+  #keysHint{display:none}
+  #toast{top:calc(46px + env(safe-area-inset-top));font-size:16px}
+  #dlg{width:min(66vw,720px);padding:9px 14px 16px;bottom:calc(10px + env(safe-area-inset-bottom))}#dlgWho{font-size:13px;margin-bottom:3px}#dlgTxt{font-size:16px;min-height:44px;line-height:1.35}
+  #panel{max-height:94vh;padding:12px 14px;width:min(92vw,640px)}#panel h2{font-size:20px}#panel .subt{font-size:14px;margin-bottom:6px}#panel .row{font-size:15px;padding:4px 2px}
+  .pbtn{padding:9px 12px;font-size:15px}.stars{font-size:20px}.kg{font-size:18px}
+  #card{padding:4vh 8vw}#card .ln{font-size:clamp(16px,3.6vh,22px);margin:3px 0}#card .ttl{font-size:clamp(26px,9vh,44px)}
+  #fishHint{top:calc(48px + env(safe-area-inset-top));bottom:auto;font-size:17px}#fishHint.alert{font-size:26px}
+  #powerWrap{bottom:calc(30px + env(safe-area-inset-bottom))}
+  #reelWrap{bottom:calc(10px + env(safe-area-inset-bottom));padding:6px 12px 8px;width:min(48vw,440px)}#rState{font-size:20px;height:24px}#rTrack{height:24px;margin:3px 0 6px}
+  #fishExit{top:calc(48px + env(safe-area-inset-top))}
+  #note .paper{font-size:16px;padding:18px 20px;max-height:86vh;overflow:auto}
+  #menu h1{font-size:clamp(40px,12vh,64px);letter-spacing:6px}#menu .chap{margin:4px 0 10px;font-size:16px}
+  #menu input,#menu .mb{font-size:16px;padding:8px}#menu .mb{margin-top:7px}#menuMsg{margin-top:8px;font-size:13px}
+  #menuLists{font-size:12px;gap:16px;margin-top:8px}
+}
+@media (max-height:520px) and (min-width:640px){
+  #panel .btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}#panel .btns .pbtn.main,#panel .btns .note{grid-column:1/-1}#panel .btns .pbtn.main{order:-1}#panel.catch .btns{grid-template-columns:1fr}#panel.catch .btns .pbtn.main{order:0}
+  #menu{flex-direction:row;gap:5vw}#menuLists{flex-direction:column;gap:10px;max-width:30vw}
+}
 </style>
 </head>
 <body>
@@ -140,7 +217,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer}
 <div id="hud" class="hidden">
   <div id="hudTL"></div>
   <div id="compass"></div>
-  <div id="hudTR"><button class="icoBtn" id="btnMute" title="Audio">♪</button></div>
+  <div id="hudTR"><button class="icoBtn" id="fsBtn" title="Schermo intero">⛶</button><button class="icoBtn" id="btnMute" title="Audio">♪</button></div>
   <div id="joy" class="hidden"><div id="knob"></div></div>
   <button id="act" class="hidden">PESCA</button>
   <div id="keysHint" class="hidden">WASD / frecce: naviga · SPAZIO: azione · ESC: annulla</div>
@@ -148,13 +225,16 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer}
 
 <div id="fishUI" class="hidden">
   <div id="fishHint"></div>
-  <div id="powerWrap" class="hidden"><div id="powerBar"></div></div>
+  <div id="powerWrap" class="hidden"><div id="powerSweet"></div><div id="powerBar"></div></div>
   <div id="reelWrap" class="hidden">
-    <div id="reelTrack"><div id="reelZone"></div><div id="reelFish"></div></div>
-    <div id="reelProg"><div id="reelProgFill"></div></div>
+    <div id="rState">TIRA!</div>
+    <div id="rTrack"><div id="rBoat">⛵</div><div id="rLine"></div><div id="rFish"></div></div>
+    <div id="rTen"><div id="rTenFill"></div><span>tensione</span></div>
+    <div id="rKnots"><span id="rName"></span><span>lenza <b id="rK">●●●</b></span></div>
   </div>
   <button class="icoBtn" id="fishExit">✕</button>
 </div>
+<div id="pop"></div>
 
 <div id="toast"></div>
 <div id="whisper"></div>
@@ -166,17 +246,22 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer}
 <div id="card" class="hidden"><div id="cardBody"></div><div id="cardCont">— tocca per continuare —</div></div>
 
 <div id="menu" class="hidden">
-  <h1>MAREA NERA</h1>
-  <div class="chap">Capitolo I — Il Pescato</div>
-  <input id="nameIn" maxlength="18" placeholder="Il tuo nome, pescatore" autocomplete="off">
-  <button class="mb" id="btnNew">Salpa</button>
-  <button class="mb sec hidden" id="btnCont">Continua — Giorno 1</button>
-  <div id="menuMsg"></div>
+  <div class="mL">
+    <h1>MAREA NERA</h1>
+    <div class="chap" id="menuChap">Capitolo I — Il Pescato</div>
+    <input id="nameIn" maxlength="18" placeholder="Il tuo nome, pescatore" autocomplete="off">
+    <button class="mb sec hidden" id="btnCont">Continua</button>
+    <button class="mb" id="btnNew">Salpa</button>
+    <button class="mb sec" id="btnFull">⛶ Schermo intero</button>
+    <div id="menuMsg"></div>
+  </div>
   <div id="menuLists">
     <div><h4>Annali del porto</h4><div id="lstAnnali">—</div></div>
     <div><h4>Tornati con qualcosa</h4><div id="lstDispersi">—</div></div>
+    <div><h4>Gli Annegati</h4><div id="lstAnnegati">—</div></div>
   </div>
 </div>
+<div id="rotate"><div class="ph"></div><div class="t">Ruota il telefono</div><small>Marea Nera si gioca in orizzontale, a schermo intero.</small><button id="rotSkip">Gioca in verticale</button></div>
 <div id="netState"></div>
 <div id="fade"></div>
 <div id="loading">ASHCOMBE, 1927</div>
@@ -237,11 +322,13 @@ if (!pid) { pid = 'p' + Date.now().toString(36) + Math.random().toString(36).sli
 let S;
 function freshState(nome) {
   return { pid, nome, capitolo: 1, giorno: 1, soldi: CFG.soldiIniziali, debito: CFG.debito, stiva: [],
-    upgrade: { stiva: 0, canna: 0, lanterna: 0 }, flags: { inizio: Date.now() }, stats: { pescati: 0, venduti: 0, guadagno: 0 } };
+    upgrade: { stiva: 0, canna: 0, lanterna: 0 }, flags: { inizio: Date.now() }, stats: { pescati: 0, venduti: 0, guadagno: 0 },
+    scelte: { nero: 0, buttati: 0, idoloGettato: 0 }, taccuino: {} };
 }
 
 /* ---------------- FIREBASE ---------------- */
 const FB = { ok: false, m: null, db: null };
+let ANNEGATI = []; // pesci rari: giocatori che hanno finito il gioco (/marea_nera/annegati)
 const withTimeout = (p, ms) => Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))]);
 async function fbInit() {
   try {
@@ -276,27 +363,64 @@ async function loadGame() {
   let d = await fbGet('giocatori/' + pid);
   if (!d) { try { d = JSON.parse(localStorage.getItem('mn_save') || 'null'); } catch (e) { d = null; } }
   if (!d) return null;
-  d.stiva = d.stiva || []; d.flags = d.flags || {}; d.upgrade = { stiva: 0, canna: 0, lanterna: 0, ...(d.upgrade || {}) };
+  d.stiva = (d.stiva || []).map(it => (typeof it === 'string' ? { k: it, w: 0, q: 1 } : it)).filter(it => FISH[it.k]);
+  d.flags = d.flags || {}; d.upgrade = { stiva: 0, canna: 0, lanterna: 0, ...(d.upgrade || {}) };
   d.stats = { pescati: 0, venduti: 0, guadagno: 0, ...(d.stats || {}) };
+  d.scelte = { nero: 0, buttati: 0, idoloGettato: 0, ...(d.scelte || {}) }; d.taccuino = d.taccuino || {};
   return d;
 }
 
 /* ---------------- PESCI ---------------- */
+// kg: peso min/max · col: colore del pesce che salta · cursed: pescato della maledizione (Capitolo II)
 const FISH = {
-  aringa:   { nome: 'Aringa', p: 'aringa', diff: .2, w: 30, desc: `Argento povero. Ne è pieno il mondo, e il mondo ne ha sempre fame.` },
-  sgombro:  { nome: 'Sgombro', p: 'sgombro', diff: .28, w: 30, desc: `Striato come il mare d'inverno. Un pesce onesto.` },
-  merluzzo: { nome: 'Merluzzo', p: 'merluzzo', diff: .42, w: 18, desc: `Grosso, pesante, con l'occhio stanco dei vecchi.` },
-  spigola:  { nome: 'Spigola', p: 'spigola', diff: .55, w: 10, desc: `Lucida e nervosa. Abel la vende ai signori di Arkfield.` },
-  grongo:   { nome: 'Grongo', p: 'grongo', diff: .72, w: 5, desc: `Un'anguilla grossa come un braccio. Morde anche fuori dall'acqua.` },
-  rana:     { nome: 'Rana pescatrice', p: 'rana', diff: .78, w: 2.5, desc: `Tutta bocca. Il suo piccolo lume attira i pesci nel buio. Poi, più niente.` },
-  cieco:    { nome: 'Merluzzo cieco', p: 'cieco', diff: .4, weird: 1, desc: `Dove dovrebbero esserci gli occhi c'è pelle liscia, grigia. Eppure la testa si gira verso di te.` },
-  denti:    { nome: 'Aringa?', p: null, diff: .35, weird: 1, desc: `Ha i denti. File di denti sottili come aghi, fino in gola. Le aringhe non hanno denti.` },
-  stivale:  { nome: 'Stivale', p: null, diff: .12, junk: 1, desc: `Uno stivale da pescatore, pieno d'acqua. Di chi sarà stato?` },
-  bottiglia:{ nome: 'Bottiglia sigillata', p: null, diff: .15, item: 1, desc: `Vetro verde, tappo di cera nera. Dentro, un foglio arrotolato.` },
-  lanterna: { nome: 'Lanterna abissale', p: 'lanterna', diff: .55, weird: 1, desc: `Non è sui libri di Abel. Il ventre pulsa di una luce verdastra, anche adesso che è morta. Soprattutto adesso.` },
-  idolo:    { nome: '???', p: null, diff: 1, item: 1, desc: `Una figura di pietra verde-nera, grande quanto un pugno. Accovacciata, con troppe braccia e nessun volto. È tiepida. Pulsa. Come un cuore.` }
+  aringa:   { nome: 'Aringa', p: 'aringa', diff: .2, w: 30, kg: [.15, .45], col: '#9fb0b8', desc: `Argento povero. Ne è pieno il mondo, e il mondo ne ha sempre fame.` },
+  sgombro:  { nome: 'Sgombro', p: 'sgombro', diff: .28, w: 30, kg: [.3, 1.1], col: '#5f8a8a', desc: `Striato come il mare d'inverno. Un pesce onesto.` },
+  merluzzo: { nome: 'Merluzzo', p: 'merluzzo', diff: .42, w: 18, kg: [1.5, 6], col: '#8d8470', desc: `Grosso, pesante, con l'occhio stanco dei vecchi.` },
+  spigola:  { nome: 'Spigola', p: 'spigola', diff: .55, w: 10, kg: [.8, 3.5], col: '#b8c0c4', desc: `Lucida e nervosa. Abel la vende ai signori di Arkfield.` },
+  grongo:   { nome: 'Grongo', p: 'grongo', diff: .72, w: 5, kg: [3, 12], col: '#4a4a40', desc: `Un'anguilla grossa come un braccio. Morde anche fuori dall'acqua.` },
+  rana:     { nome: 'Rana pescatrice', p: 'rana', diff: .78, w: 2.5, kg: [2, 15], col: '#6a5a48', desc: `Tutta bocca. Il suo piccolo lume attira i pesci nel buio. Poi, più niente.` },
+  cieco:    { nome: 'Merluzzo cieco', p: 'cieco', diff: .4, weird: 1, kg: [1, 4], col: '#9a9a92', desc: `Dove dovrebbero esserci gli occhi c'è pelle liscia, grigia. Eppure la testa si gira verso di te.` },
+  denti:    { nome: 'Aringa?', p: null, diff: .35, weird: 1, kg: [.2, .5], col: '#8fa0a0', desc: `Ha i denti. File di denti sottili come aghi, fino in gola. Le aringhe non hanno denti.` },
+  stivale:  { nome: 'Stivale', p: null, diff: .12, junk: 1, kg: [1.2, 1.2], col: '#2a2420', desc: `Uno stivale da pescatore, pieno d'acqua. Di chi sarà stato?` },
+  bottiglia:{ nome: 'Bottiglia sigillata', p: null, diff: .15, item: 1, kg: [.6, .6], col: '#2f5a3a', desc: `Vetro verde, tappo di cera nera. Dentro, un foglio arrotolato.` },
+  lanterna: { nome: 'Lanterna abissale', p: 'lanterna', diff: .55, weird: 1, kg: [.8, 2.4], col: '#2a6a4a', desc: `Non è sui libri di Abel. Il ventre pulsa di una luce verdastra, anche adesso che è morta. Soprattutto adesso.` },
+  idolo:    { nome: '???', p: null, diff: 1, item: 1, kg: [2.2, 2.2], col: '#0c1a14', desc: `Una figura di pietra verde-nera, grande quanto un pugno. Accovacciata, con troppe braccia e nessun volto. È tiepida. Pulsa. Come un cuore.` },
+  // --- Capitolo II: il pescato sbagliato ---
+  occhi:    { nome: 'Sgombro con occhi umani', p: 'sgombro', diff: .3, weird: 1, cursed: 1, kg: [.3, 1.1], col: '#5f8a7a',
+    desc: `Le strisce sono quelle di sempre. Ma gli occhi sono umani: bianchi, con l'iride castana. Ti seguono mentre ti muovi.`,
+    voce: ['Non vendermi a loro.', 'Ti vedo, {nome}.', 'Anche tu avrai questi occhi.'] },
+  dita:     { nome: 'Merluzzo con le dita', p: 'merluzzo', diff: .4, weird: 1, cursed: 1, kg: [1.5, 6], col: '#8d8070',
+    desc: `Al posto delle pinne pettorali, due mani piccole. Cinque dita ciascuna. Con le unghie. Si stringono quando le guardi.`,
+    voce: ['Tienimi la mano.', 'Le dita servono per tenersi.', 'Mi ha toccato Lui. Ora ho le mani.'] },
+  respira:  { nome: 'Aringa che respira', p: 'aringa', diff: .25, weird: 1, cursed: 1, kg: [.15, .45], col: '#9fb8b0',
+    desc: `È fuori dall'acqua da un'ora. Le branchie sono ferme. Eppure respira: piano, regolare, dalla bocca. Come una persona che dorme.`,
+    voce: ['Ssssh. Sta dormendo.', 'Respiro per te, {nome}.', 'Ancora un poco. Ancora un poco.'] },
+  anello:   { nome: 'Rana pescatrice con la fede', p: 'rana', diff: .5, weird: 1, cursed: 1, kg: [2, 15], col: '#6a6048',
+    desc: `Nella bocca spalancata, incastrato tra i denti, un anello nuziale. All'interno c'è inciso: «E.M. — M.A. 1897».`,
+    voce: ['Di\' a Margaret che...', 'Lei mi aspetta ancora.', 'Il mare tiene tutto. Anche le promesse.'] },
+  // --- Multigiocatore: chi ha finito il gioco ---
+  annegato: { nome: 'Annegato', p: null, diff: .5, weird: 1, kg: [58, 96], col: '#6a7a70',
+    desc: `Pelle grigia, mani palmate, occhi aperti. Al collo porta una piastrina d'ottone con un nome inciso.`,
+    voce: ['Anch\'io avevo un debito.', 'Il pescato eri tu. Lo sono stato anch\'io.', 'Saluta Ashcombe da parte mia.'] }
 };
+const CURSED = ['occhi', 'dita', 'respira', 'anello'];
 const price = k => (FISH[k].p ? (CFG.prezzi[FISH[k].p] || 0) : 0);
+const itemKey = it => (typeof it === 'string' ? it : it.k);
+const fishName = it => (it.k === 'annegato' && it.ann ? `Annegato — «${it.ann.nome}»` : FISH[it.k].nome);
+// valore di un pezzo: dipende da taglia e stelle. buyer: 'abel' o 'nero' (l'uomo della Compagnia)
+function itemValue(it, buyer = 'abel') {
+  const f = FISH[it.k];
+  if (it.k === 'annegato') return buyer === 'nero' ? 180 : 0;
+  const base = price(it.k); if (!base) return 0;
+  const [a, b] = f.kg; const st = b > a ? clamp(((it.w || (a + b) / 2) - a) / (b - a), 0, 1) : .5;
+  let v = base * (.6 + .8 * st) * (1 + .25 * ((it.q || 1) - 1));
+  if (f.cursed) return buyer === 'nero' ? Math.round(v * 3) : 0;
+  if (buyer === 'nero') return 0;
+  if (it.k === 'cieco') v *= .5;
+  if (S.capitolo === 1 && S.giorno === 3 && !f.weird) v *= .85;
+  return Math.round(v);
+}
+const abelRefuses = it => !!FISH[it.k].cursed || it.k === 'annegato' || it.k === 'denti';
 
 /* =========================================================
    AUDIO (tutto generato con Web Audio)
@@ -369,7 +493,13 @@ const SFX = {
   thunder: () => { burst(3.5, 110, 0.3, 0.7, 'lowpass', 0, 0.02); burst(2, 300, 0.5, 0.25, 'lowpass', 0.1, 0.3); },
   rumble: () => { burst(4, 70, 0.5, 0.7, 'lowpass', 0, 1); tone(36, 4, 'sine', 0.35, 0, 30); },
   whisper: () => { for (let i = 0; i < 14; i++) burst(rand(0.12, 0.35), rand(700, 2800), rand(4, 10), rand(0.03, 0.07), 'bandpass', i * rand(0.09, 0.17), 0.04); },
-  sell: () => { tone(988, 0.1, 'triangle', 0.08); tone(1318, 0.18, 'triangle', 0.08, 0.07); }
+  sell: () => { tone(988, 0.1, 'triangle', 0.08); tone(1318, 0.18, 'triangle', 0.08, 0.07); },
+  perfect: () => { [784, 988, 1175, 1568].forEach((f, i) => tone(f, .22, 'triangle', .07, i * .06)); },
+  warn: () => { tone(180, .09, 'square', .05); tone(150, .12, 'square', .05, .1); },
+  snap: () => { tone(900, .35, 'sawtooth', .07, 0, 140); burst(.2, 2000, 2, .12); },
+  creak: () => { tone(rand(90, 130), .18, 'sawtooth', .03, 0, rand(70, 100)); },
+  flop: () => { burst(.12, 600, 1, .25, 'lowpass'); burst(.1, 500, 1, .2, 'lowpass', .18); },
+  record: () => { [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i === 5 ? .6 : .16, 'triangle', .08, i * .11)); }
 };
 const CHORDS = [[220, 261.6, 329.6], [174.6, 220, 261.6], [196, 246.9, 293.7], [164.8, 207.7, 246.9]];
 function audioUpdate(dt) {
@@ -405,7 +535,7 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x555555, 0.004);
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1600);
+const camera = new THREE.PerspectiveCamera(innerWidth < innerHeight ? 74 : 60, innerWidth / innerHeight, 0.1, 1600);
 
 const PostShader = {
   uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uCorr: { value: 0 }, uFlash: { value: 0 } },
@@ -555,7 +685,7 @@ function makePerson(coat, sitting = false) {
 /* ---------- Porto di Ashcombe ---------- */
 const WINDOWS = [];
 const landMat = M('#23251f'), rockMat = M('#2a2c2b'), woodMat = M('#3b2c20'), darkWood = M('#24190f');
-let stallLight, jonah, jonahLantern, jonahLight, abel, lighthouse = {};
+let uomoNero, stallLight, jonah, jonahLantern, jonahLight, abel, lighthouse = {};
 function buildPort() {
   const land = new THREE.Mesh(new THREE.BoxGeometry(1400, 8, 500), landMat); land.position.set(0, -2, 45 + 250); scene.add(land);
   // scogliera e sassi lungo la riva
@@ -604,6 +734,9 @@ function buildPort() {
   stallLight = new THREE.PointLight(0xffa04a, 6, 22, 1.6); stallLight.position.set(1.8, 2.4, -1.2); st.add(stallLight);
   scene.add(st);
   abel = makePerson('#3a3f44'); abel.position.set(-14, 2, 52.6); abel.rotation.y = Math.PI; scene.add(abel);
+  // l'uomo in nero della Compagnia Marrow (Capitolo II)
+  uomoNero = makePerson('#0a0a0b'); uomoNero.scale.set(1, 1.12, 1); uomoNero.position.set(-9.5, 2, 49.5); uomoNero.rotation.y = Math.PI * 1.1;
+  uomoNero.children[1].material = M('#9aa49e'); uomoNero.visible = false; scene.add(uomoNero);
   // Jonah in fondo al molo
   jonah = makePerson('#4b3a28', true); jonah.position.set(-5.3, 1.75, 18.6); jonah.rotation.y = Math.PI * 0.85; scene.add(jonah);
   jonahLantern = new THREE.Mesh(new THREE.SphereGeometry(.14, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc070 })); jonahLantern.position.set(-6.6, 1.95, 18.4); scene.add(jonahLantern);
@@ -675,7 +808,7 @@ function makeHull(col) {
   return g;
 }
 const boat = { g: null, pos: new THREE.Vector3(DOCK.x, 0, DOCK.z), h: Math.PI, v: 0, pitch: 0, roll: 0, lean: 0, y: 0 };
-let boatLight, boatLamp, rodTip, idolMesh, idolMat;
+let boatLight, boatLamp, rodTip, rodPivot, idolMesh, idolMat;
 function buildBoat() {
   const g = makeHull('#3b2a1e'); boat.g = g; boat.hullMat = g.userData.hull.material;
   const deck = new THREE.Mesh(new THREE.BoxGeometry(2.7, .1, 6.2), M('#4d3b2a')); deck.position.set(0, .7, -.4); g.add(deck);
@@ -690,7 +823,7 @@ function buildBoat() {
   for (const [x, z] of [[-.8, 1.2], [.7, 1.6], [-.6, 2.3]]) { const c = new THREE.Mesh(new THREE.BoxGeometry(.7, .5, .6), M('#5a4630')); c.position.set(x, 1, z); c.rotation.y = rand(-.4, .4); g.add(c); }
   const net = new THREE.Mesh(new THREE.CylinderGeometry(.7, .8, .35, 8), M('#2e3a33')); net.position.set(.6, .9, -3.1); g.add(net);
   // canna da pesca
-  const rp = new THREE.Group(); rp.position.set(1.1, 1.0, -2.4); rp.rotation.z = -1.0; rp.rotation.x = -0.2; g.add(rp);
+  const rp = new THREE.Group(); rp.position.set(1.1, 1.0, -2.4); rp.rotation.z = -1.0; rp.rotation.x = -0.2; g.add(rp); rodPivot = rp;
   const rod = new THREE.Mesh(new THREE.CylinderGeometry(.025, .05, 3.6, 5), M('#2a1d12')); rod.position.y = 1.8; rp.add(rod);
   rodTip = new THREE.Object3D(); rodTip.position.y = 3.6; rp.add(rodTip);
   // l'idolo (nascosto fino al momento)
@@ -878,7 +1011,7 @@ const joyEl = $('joy'), knob = $('knob');
 function joyMove(e) {
   const r = joyEl.getBoundingClientRect(); let dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2), dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
   const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; }
-  joy.x = dx; joy.y = -dy; knob.style.transform = `translate(${dx * 38}px,${dy * 38}px)`;
+  joy.x = dx; joy.y = -dy; const kr = r.width * .29; knob.style.transform = `translate(${dx * kr}px,${dy * kr}px)`;
 }
 joyEl.addEventListener('pointerdown', e => { audioInit(); joy.id = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyMove(e); });
 joyEl.addEventListener('pointermove', e => { if (e.pointerId === joy.id) joyMove(e); });
@@ -928,120 +1061,271 @@ function currentAction() {
 }
 
 /* =========================================================
-   PESCA
+   PESCA — «Tira e molla»
+   Lancio con zona dorata → ferrata → recupero: TIRA quando il pesce è calmo,
+   MOLLA quando dà lo strattone. Niente punizioni a vuoto: si perde un pesce
+   solo se la lenza cede tre volte. Il pescato maledetto non scappa mai.
    ========================================================= */
-const F = { phase: 'idle', t: 0, power: 0, pdir: 1, wait: 0, bite: 0, fish: null, zy: 0, zv: 0, fy: .5, ft: .5, fv: 0, fchg: 0, prog: .3, spot: null, nothing: false, castFrom: new THREE.Vector3(), castTo: new THREE.Vector3(), fakeT: 0, dip: 0 };
+// pesce che salta in barca
+const leapMat = new THREE.MeshStandardMaterial({ color: 0x9fb0b8, roughness: .35, metalness: .45, flatShading: true, emissive: 0x000000 });
+const leapFish = new THREE.Group();
+{ const b = new THREE.Mesh(new THREE.SphereGeometry(.5, 10, 7), leapMat); b.scale.set(1.5, .62, .38); leapFish.add(b);
+  const t = new THREE.Mesh(new THREE.ConeGeometry(.36, .55, 4), leapMat); t.rotation.z = Math.PI / 2; t.position.x = -.95; t.scale.z = .3; leapFish.add(t);
+  const fn = new THREE.Mesh(new THREE.ConeGeometry(.16, .4, 3), leapMat); fn.position.set(.05, .38, 0); fn.scale.z = .3; leapFish.add(fn);
+  const ey = new THREE.Mesh(new THREE.SphereGeometry(.07, 6, 4), new THREE.MeshBasicMaterial({ color: 0x111111 })); ey.position.set(.52, .08, .16); leapFish.add(ey);
+  const ey2 = ey.clone(); ey2.position.z = -.16; leapFish.add(ey2); }
+leapFish.visible = false; scene.add(leapFish);
+// spruzzi
+const SPLASH = [];
+for (let i = 0; i < 10; i++) { const m = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xeef4f8, transparent: true, opacity: 0, depthWrite: false })); m.visible = false; scene.add(m); SPLASH.push({ m, t: 1, s: 1 }); }
+let splashI = 0;
+function splashAt(x, z, s = 1) { const p = SPLASH[splashI++ % SPLASH.length]; p.t = 0; p.s = s; p.m.visible = true; p.m.position.set(x, H(x, z) + .08, z); }
+function updateSplash(dt) {
+  for (const p of SPLASH) { if (!p.m.visible) continue; p.t += dt * 1.6; const sc = (.3 + p.t * 2.2) * p.s; p.m.scale.set(sc, 1, sc); p.m.material.opacity = Math.max(0, 1 - p.t) * .8; if (p.t >= 1) p.m.visible = false; }
+}
+
+const F = { phase: 'idle', t: 0, power: 0, pdir: 1, perfectCast: false, wait: 0, bite: 0, biteT: 0, perfectHook: false, fish: null, spot: null, nothing: false,
+  castFrom: new THREE.Vector3(), castTo: new THREE.Vector3(), bob: new THREE.Vector3(), fakeT: 0, dip: 0,
+  dist: 1, tension: 0, fs: 'calm', fsT: 0, snaps: 0, glitch: 0, glitchT: 3, spoke: 0, ann: null, landT: 0, tickT: 0, sizeT: .5, landFrom: new THREE.Vector3() };
 const fishHint = $('fishHint');
-function setHint(t, alert = false) { fishHint.textContent = t; fishHint.classList.toggle('alert', alert); }
+const SWEET = [.72, .9], MAX_SNAPS = 3;
+const aimHint = () => isTouch ? 'Tieni premuto LANCIA e rilascia nella zona dorata' : 'Tieni premuto SPAZIO e rilascia nella zona dorata';
+function setHint(t, cls = '') { fishHint.textContent = t; fishHint.className = cls; }
+function setAct(t, f = '') { actEl.innerHTML = t; if (f) actEl.dataset.f = f; else delete actEl.dataset.f; }
+let popTimer = null;
+function pop(t, cls = '') { const e = $('pop'); e.textContent = t; e.className = ''; void e.offsetWidth; e.className = 'on ' + cls; clearTimeout(popTimer); popTimer = setTimeout(() => e.className = '', 1600); }
+const vib = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+
 function startFishing(spot) {
   mode = 'fish'; F.spot = spot; boat.v = 0; F.phase = 'aim';
   $('fishUI').classList.remove('hidden'); $('powerWrap').classList.add('hidden'); $('reelWrap').classList.add('hidden');
-  setHint(isTouch ? 'Tieni premuto per caricare il lancio' : 'Tieni premuto SPAZIO per caricare il lancio');
-  actEl.innerHTML = 'LANCIA';
+  setHint(aimHint()); setAct('LANCIA');
+  if (!S.flags.tutPesca) {
+    S.flags.tutPesca = true; saveGame();
+    say([
+      ['TU', `(Tieni premuto per caricare il lancio. Se rilasci nella zona dorata il lancio è perfetto: abboccano prima, e pesci più grossi.)`],
+      ['TU', `(Quando il galleggiante va giù, premi subito. Una ferrata rapida vale una stella in più.)`],
+      ['TU', `(Poi tieni premuto per TIRARE finché il pesce è calmo. Quando dà lo strattone, lascia: MOLLA. Se tiri contro di lui, la lenza si tende.)`]
+    ]);
+  }
 }
 function stopFishing(msg) {
-  mode = 'sail'; F.phase = 'idle'; bobber.visible = false; fishLine.visible = false;
-  $('fishUI').classList.add('hidden'); if (msg) toast(msg);
+  mode = 'sail'; F.phase = 'idle'; bobber.visible = false; fishLine.visible = false; leapFish.visible = false;
+  $('fishUI').classList.add('hidden'); setAct('PESCA'); if (msg) toast(msg);
 }
 function fishPress() {
-  if (F.phase === 'aim') { F.phase = 'charge'; F.power = 0; F.pdir = 1; $('powerWrap').classList.remove('hidden'); setHint('Rilascia per lanciare'); }
-  else if (F.phase === 'wait') { if (F.spot.fossa) return; F.phase = 'pause'; F.t = 1.2; bobber.visible = false; fishLine.visible = false; setHint('Troppo presto. Il pesce si è spaventato.'); SFX.lose(); }
-  else if (F.phase === 'bite') beginReel();
+  if (F.phase === 'aim') { F.phase = 'charge'; F.power = 0; F.pdir = 1; $('powerWrap').classList.remove('hidden'); setHint('Rilascia nella zona dorata!'); SFX.click(); }
+  else if (F.phase === 'wait') { if (!F.spot.fossa) { setHint('Non ancora... aspetta che il galleggiante vada sotto.', 'soft'); F.dip = .15; } }
+  else if (F.phase === 'bite') hook();
 }
 function fishRelease() { if (F.phase === 'charge') cast(); }
 function rightVec() { return new THREE.Vector3(Math.cos(boat.h), 0, -Math.sin(boat.h)); }
 function fwdVec() { return new THREE.Vector3(Math.sin(boat.h), 0, Math.cos(boat.h)); }
 function cast() {
   $('powerWrap').classList.add('hidden'); SFX.cast();
+  F.perfectCast = F.power >= SWEET[0] && F.power <= SWEET[1];
+  if (F.perfectCast) { pop('Lancio perfetto'); SFX.perfect(); }
   F.phase = 'cast'; F.t = 0; rodTip.getWorldPosition(F.castFrom);
   F.castTo.copy(boat.pos).addScaledVector(rightVec(), 6 + F.power * 10).addScaledVector(fwdVec(), rand(-2, 2));
-  bobber.visible = true; fishLine.visible = true; setHint('...');
-  actEl.innerHTML = 'TIRA';
+  bobber.visible = true; fishLine.visible = true; setHint('...'); setAct('FERRA');
 }
 function chooseFish() {
-  const sp = F.spot; F.nothing = false;
+  const sp = F.spot; F.nothing = false; F.ann = null;
   if (sp.fossa) return R.fossaCatches >= 2 ? 'idolo' : 'lanterna';
-  if (S.giorno === 2 && !S.flags.bottiglia && R.catches === 1) return 'bottiglia';
-  if (S.giorno === 2 && !S.flags.denti && R.catches === 3) return 'denti';
-  if (S.giorno === 3 && Math.random() < .65) { F.nothing = true; return null; }
-  if (S.giorno >= 2 && Math.random() < (S.giorno === 2 ? .1 : .25)) return 'cieco';
+  // un Annegato: un altro giocatore che ha finito il gioco
+  if (ANNEGATI.length && R.catches >= 1 && Math.random() < .03) { F.ann = pick(ANNEGATI); return 'annegato'; }
+  if (S.capitolo === 1) {
+    if (S.giorno === 2 && !S.flags.bottiglia && R.catches === 1) return 'bottiglia';
+    if (S.giorno === 2 && !S.flags.denti && R.catches === 3) return 'denti';
+    if (S.giorno === 3 && Math.random() < .5) { F.nothing = true; return null; }
+    if (S.giorno >= 2 && Math.random() < (S.giorno === 2 ? .1 : .25)) return 'cieco';
+  } else if (S.capitolo === 2) {
+    if (!S.flags.primoMaledetto && R.catches === 1) { S.flags.primoMaledetto = true; return 'occhi'; }
+    const p = S.giorno === 4 ? .3 : S.giorno === 5 ? .45 : .62;
+    if (Math.random() < p) return pick(CURSED);
+  }
   if (Math.random() < .04) return 'stivale';
-  const pool = ['aringa', 'sgombro', 'merluzzo', 'spigola', 'grongo', 'rana']; let tot = 0; pool.forEach(k => tot += FISH[k].w);
-  let r = Math.random() * tot; for (const k of pool) { r -= FISH[k].w; if (r <= 0) return k; } return 'aringa';
+  const pool = ['aringa', 'sgombro', 'merluzzo', 'spigola', 'grongo', 'rana']; let tot = 0;
+  const wOf = k => FISH[k].w * (F.perfectCast && FISH[k].diff > .5 ? 1.8 : 1);
+  pool.forEach(k => tot += wOf(k));
+  let r = Math.random() * tot; for (const k of pool) { r -= wOf(k); if (r <= 0) return k; } return 'aringa';
+}
+function hook() {
+  F.perfectHook = F.biteT < .45;
+  if (F.perfectHook && F.fish !== 'idolo') { pop('Ferrata perfetta'); SFX.perfect(); }
+  beginReel();
 }
 function beginReel() {
-  F.phase = 'reel'; F.prog = F.fish === 'idolo' ? .15 : .3; F.zy = 0; F.zv = 0; F.fy = .4; F.ft = .5; F.fchg = 0;
-  $('reelWrap').classList.remove('hidden'); setHint(isTouch ? 'Tieni premuto per alzare la rete · tieni il pesce nella zona' : 'Tieni premuto SPAZIO per alzare la zona · tieni il pesce dentro');
-  const fe = $('reelFish'); fe.classList.toggle('weird', !!FISH[F.fish].weird || F.fish === 'idolo');
-  if (F.fish === 'idolo') { R.dronePulse = .25; SFX.rumble(); }
+  const k = F.fish, f = FISH[k];
+  F.phase = 'reel'; F.dist = F.perfectHook ? .8 : 1; F.tension = 0; F.fs = 'calm'; F.fsT = rand(1.1, 1.8); F.snaps = 0; F.spoke = 0; F.glitch = 0; F.glitchT = rand(1.5, 3); F.tickT = 0;
+  const [a, b] = f.kg; F.sizeT = Math.pow(Math.random(), F.perfectCast ? .55 : 1.35);
+  F.weight = Math.round((a + (b - a) * F.sizeT) * 100) / 100;
+  $('reelWrap').classList.remove('hidden');
+  const fe = $('rFish'); fe.className = (f.weird || k === 'idolo') ? 'weird' : ''; fe.style.background = f.col; fe.style.color = f.col;
+  $('rName').textContent = k === 'idolo' ? 'qualcosa di pesante' : (f.weird ? '...?' : 'abboccato');
+  setHint('');
+  if (k === 'idolo') { R.dronePulse = .25; SFX.rumble(); }
+  if (f.voce) setTimeout(() => { if (F.phase === 'reel') speak(); }, 900);
+}
+function speak() {
+  const f = FISH[F.fish]; if (!f.voce) return;
+  let l = f.voce[F.spoke % f.voce.length]; F.spoke++;
+  if (F.fish === 'annegato' && F.ann && F.spoke === 1) l = `Mi chiamavo ${F.ann.nome}.`;
+  whisper(l.replace('{nome}', S.nome), 2600); corrPulse = Math.max(corrPulse, .3);
+}
+function snap() {
+  const f = FISH[F.fish]; F.snaps++; F.tension = .35; F.dist = Math.min(1, F.dist + .14); shake = Math.max(shake, .35); SFX.snap(); vib([40, 30, 40]);
+  const unlosable = f.cursed || F.fish === 'annegato' || F.fish === 'idolo';
+  if (unlosable) { pop(pick(['Non vuole andarsene', 'Torna da te', 'Ti tiene lui']), 'grn'); return; }
+  if (F.snaps >= MAX_SNAPS) { escape(); return; }
+  pop('La lenza cede!', 'bad');
+}
+function escape() {
+  F.phase = 'pause'; F.t = 1.6; $('reelWrap').classList.add('hidden'); bobber.visible = false; fishLine.visible = false; SFX.lose();
+  setHint(pick(['È scappato... ma era bello grosso.', 'Si è liberato. Il prossimo è tuo.', 'Ha strappato via l\'amo. Riprova.']), 'soft'); setAct('LANCIA');
+}
+function updateReel(dt) {
+  const k = F.fish, f = FISH[k], d = f.diff, idol = k === 'idolo', strange = !!f.cursed || k === 'annegato';
+  const held = actionHeld;
+  if (idol) {
+    // l'idolo: un peso morto che sale da sé, lento, e non si può perdere
+    F.fs = 'heavy'; if (held) F.dist -= .085 * dt; F.tension = .82 + Math.sin(T * 9) * .12;
+    shake = Math.max(shake, .25); R.dronePulse = .2 + (1 - F.dist) * .25; corrPulse = (1 - F.dist) * .4; if (Math.random() < dt * 3) SFX.tick();
+  } else {
+    const reelSpd = (.27 + S.upgrade.canna * .06) / (.7 + d * .6) * (1.15 - F.sizeT * .35);
+    F.fsT -= dt;
+    if (F.fs === 'calm' && F.fsT <= 0) { F.fs = 'warn'; F.fsT = .6 - d * .15; SFX.warn(); vib(25); }
+    else if (F.fs === 'warn' && F.fsT <= 0) { F.fs = 'run'; F.fsT = rand(.7, 1.05) + d * .8; SFX.splash(); splashAt(F.bob.x, F.bob.z, 1.2); vib(60); }
+    else if (F.fs === 'run' && F.fsT <= 0) { F.fs = 'calm'; F.fsT = rand(1.1, 2.1) * (1.25 - d * .5); }
+    if (F.fs === 'run') {
+      if (held) F.tension += (.75 + d * .85) * dt;
+      else { F.tension = Math.max(0, F.tension - 1.5 * dt); F.dist = Math.min(1, F.dist + .045 * (.5 + d) * dt); }
+      if (Math.random() < dt * 5) splashAt(F.bob.x + rand(-.6, .6), F.bob.z + rand(-.6, .6), .6);
+    } else {
+      if (held) {
+        F.dist -= reelSpd * dt; F.tension += (.22 - F.tension) * Math.min(1, dt * 3);
+        F.tickT -= dt; if (F.tickT <= 0) { SFX.tick(); F.tickT = .07; }
+      } else F.tension = Math.max(0, F.tension - .9 * dt);
+    }
+    // stranezze del pescato maledetto: la barra mente, e il pesce viene verso di te da solo
+    if (strange) {
+      F.glitchT -= dt;
+      if (F.glitchT <= 0 && F.glitch <= 0) { F.glitch = rand(.6, 1.1); F.glitchT = rand(2, 3.5); SFX.weird(); }
+      if (F.glitch > 0) { F.glitch -= dt; F.dist -= .05 * dt; }
+      if ((F.spoke === 1 && F.dist < .55) || (F.spoke === 2 && F.dist < .2)) speak();
+    }
+    if (F.tension >= 1) snap();
+  }
+  F.dist = Math.min(1, F.dist);
+  // UI
+  const g = F.glitch > 0, rw = $('reelWrap');
+  let st = F.fs === 'run' ? 'run' : F.fs === 'warn' ? 'warn' : 'calm';
+  let lbl = idol ? 'TIRA...' : st === 'run' ? 'MOLLA!' : st === 'warn' ? 'ATTENTO...' : 'TIRA!';
+  if (g) lbl = pick(['TIRA!', 'MOLLA!', 'TIENIMI', 'TIRA!', '...']);
+  rw.className = (g ? 'cursedR ' : '') + (idol ? 'run' : st);
+  $('rState').textContent = lbl;
+  const vd = clamp(F.dist + (g ? rand(-.08, .08) : 0), 0, 1);
+  const tw = $('rTrack').clientWidth; const fx = 26 + vd * (tw - 46);
+  $('rFish').style.left = fx + 'px'; $('rLine').style.width = Math.max(0, fx - 30) + 'px';
+  $('rFish').classList.toggle('glitch', g);
+  $('rTenFill').style.width = (clamp(F.tension, 0, 1) * 100) + '%'; $('rTen').classList.toggle('beat', strange || idol);
+  $('rTenFill').style.setProperty('--bw', $('rTen').clientWidth + 'px');
+  $('rK').textContent = (strange || idol) ? '∞' : '●'.repeat(MAX_SNAPS - F.snaps) + '○'.repeat(F.snaps);
+  setAct(st === 'run' && !g ? 'MOLLA' : 'TIRA', st === 'run' && !g ? 'molla' : 'tira');
+  if (F.tension > .75 && Math.random() < dt * 6) SFX.creak();
+  F.dip = st === 'run' ? .8 + Math.sin(T * 30) * .2 : .5 + Math.sin(T * 12) * .15;
+  if (F.dist <= 0) land();
+}
+function land() {
+  F.phase = 'land'; F.landT = 0; $('reelWrap').classList.add('hidden'); setAct('...');
+  F.landFrom.copy(F.bob); bobber.visible = false; fishLine.visible = false;
+  const f = FISH[F.fish]; leapMat.color.set(f.col); leapMat.emissive.set(f.weird ? 0x1a5a3a : 0x000000);
+  const sc = clamp(.45 + Math.cbrt(F.weight) * .35, .45, 1.7); leapFish.scale.setScalar(F.fish === 'annegato' ? 1.9 : sc);
+  leapFish.visible = F.fish !== 'idolo';
+  SFX.splash(); splashAt(F.bob.x, F.bob.z, 1.6); vib(40);
 }
 function updateFishing(dt) {
   const tip = new THREE.Vector3(); rodTip.getWorldPosition(tip);
   if (F.phase === 'charge') {
-    F.power += F.pdir * dt * 1.3; if (F.power > 1) { F.power = 1; F.pdir = -1; } if (F.power < 0) { F.power = 0; F.pdir = 1; }
-    $('powerBar').style.width = (F.power * 100) + '%';
+    F.power += F.pdir * dt * 1.15; if (F.power > 1) { F.power = 1; F.pdir = -1; } if (F.power < 0) { F.power = 0; F.pdir = 1; }
+    $('powerBar').style.width = (F.power * 100) + '%'; $('powerBar').classList.toggle('hot', F.power >= SWEET[0] && F.power <= SWEET[1]);
   } else if (F.phase === 'cast') {
     F.t += dt / .7; const t = Math.min(F.t, 1);
     bobber.position.lerpVectors(F.castFrom, F.castTo, t); bobber.position.y = lerp(F.castFrom.y, H(F.castTo.x, F.castTo.z) + .1, t) + Math.sin(t * Math.PI) * 4;
     if (F.t >= 1) {
-      SFX.splash(); F.phase = 'wait'; F.fish = chooseFish();
-      F.wait = F.spot.fossa ? rand(.8, 1.6) : (F.nothing ? rand(7, 9) : rand(2, 5.5)); F.fakeT = rand(.8, 2); F.dip = 0;
+      SFX.splash(); splashAt(F.castTo.x, F.castTo.z, .8); F.phase = 'wait'; F.fish = chooseFish(); F.bob.copy(F.castTo);
+      F.wait = F.spot.fossa ? rand(.8, 1.4) : (F.nothing ? rand(2.5, 3.5) : rand(1.2, 3) * (F.perfectCast ? .55 : 1)); F.fakeT = rand(.5, 1.2); F.dip = 0;
+      setHint('Aspetta che il galleggiante vada sotto...', 'soft');
     }
   } else if (F.phase === 'wait') {
     F.wait -= dt; F.fakeT -= dt;
-    if (F.fakeT < 0 && !F.nothing) { F.dip = .25; F.fakeT = rand(1, 2.5); SFX.tick(); }
+    if (F.fakeT < 0 && !F.nothing) { F.dip = .2; F.fakeT = rand(.8, 1.6); SFX.tick(); }
     F.dip *= Math.exp(-dt * 6);
     if (F.wait <= 0) {
-      if (F.nothing) { F.phase = 'pause'; F.t = 1.6; setHint(pick(['Niente. Nemmeno un fremito.', 'Il mare tace.', 'Niente. Come se sotto non ci fosse più niente.'])); bobber.visible = false; fishLine.visible = false; actEl.innerHTML = 'LANCIA'; }
-      else { F.phase = 'bite'; F.bite = F.fish === 'idolo' ? 2.5 : (.75 + S.upgrade.canna * .15); setHint('ABBOCCA!', true); SFX.bite(); if (navigator.vibrate) navigator.vibrate(F.fish === 'idolo' ? [80, 40, 300] : 60); F.dip = 1; }
+      if (F.nothing) { F.phase = 'pause'; F.t = 1.4; setHint(pick(['Niente. Il pesce qui non c\'è più.', 'Il mare tace. Il pesce è andato altrove.', 'Niente. Come se sotto non ci fosse più niente.']), 'soft'); bobber.visible = false; fishLine.visible = false; setAct('LANCIA'); }
+      else { F.phase = 'bite'; F.biteT = 0; F.bite = F.fish === 'idolo' ? 3 : (1.6 + S.upgrade.canna * .4); setHint('ABBOCCA!', 'alert'); SFX.bite(); vib(F.fish === 'idolo' ? [80, 40, 300] : 70); F.dip = 1; splashAt(F.bob.x, F.bob.z, .7); }
     }
   } else if (F.phase === 'bite') {
-    F.bite -= dt; F.dip = .9 + Math.sin(T * 30) * .1;
-    if (F.bite <= 0) { F.phase = 'pause'; F.t = 1.2; setHint('È scappato.'); SFX.lose(); bobber.visible = false; fishLine.visible = false; actEl.innerHTML = 'LANCIA'; }
+    F.bite -= dt; F.biteT += dt; F.dip = .9 + Math.sin(T * 30) * .1;
+    if (F.bite <= 0) { F.phase = 'pause'; F.t = 1; setHint('Troppo tardi: ha mollato l\'esca. Riprova!', 'soft'); SFX.lose(); bobber.visible = false; fishLine.visible = false; setAct('LANCIA'); }
   } else if (F.phase === 'reel') {
-    const idol = F.fish === 'idolo', d = FISH[F.fish].diff;
-    const zh = .24 + S.upgrade.canna * .07;
-    F.zv += (actionHeld ? 2.4 : -2.1) * dt - (idol ? .9 * dt : 0); F.zv = clamp(F.zv, -1.4, 1.4); F.zy += F.zv * dt;
-    if (F.zy < 0) { F.zy = 0; F.zv *= -.3; } if (F.zy > 1 - zh) { F.zy = 1 - zh; F.zv *= -.3; }
-    F.fchg -= dt;
-    if (F.fchg <= 0) { F.ft = idol ? rand(.05, .3) : rand(0, 1); F.fchg = idol ? rand(.2, .5) : rand(.35, 1.4) * (1.2 - d); }
-    const spd = idol ? 1.4 : .25 + d * 1.25; F.fy += clamp(F.ft - F.fy, -spd * dt, spd * dt);
-    const fh = .055; const inZone = F.fy + fh > F.zy && F.fy < F.zy + zh;
-    if (idol) { F.prog += inZone ? .13 * dt : 0; F.prog = Math.max(F.prog, .1); shake = Math.max(shake, .25); R.dronePulse = .2 + F.prog * .25; corrPulse = F.prog * .4; if (Math.random() < dt * 3) SFX.tick(); }
-    else { F.prog += inZone ? .3 * dt : -(.16 + d * .14) * dt; }
-    if (inZone && Math.random() < dt * 10) SFX.tick();
-    $('reelZone').style.height = (zh * 100) + '%'; $('reelZone').style.bottom = (F.zy * 100) + '%'; $('reelZone').classList.toggle('on', inZone);
-    $('reelFish').style.bottom = (F.fy * 92) + '%'; $('reelProgFill').style.height = (clamp(F.prog, 0, 1) * 100) + '%';
-    F.dip = .6 + Math.sin(T * 20) * .2;
-    if (F.prog >= 1) caught();
-    else if (F.prog <= 0) { F.phase = 'pause'; F.t = 1.4; $('reelWrap').classList.add('hidden'); setHint('Si è liberato.'); SFX.lose(); bobber.visible = false; fishLine.visible = false; actEl.innerHTML = 'LANCIA'; }
+    updateReel(dt);
+    if (F.phase === 'reel') {
+      const near = boat.pos.clone().addScaledVector(rightVec(), 2.8);
+      F.bob.lerpVectors(near, F.castTo, F.dist);
+      if (F.fs === 'run') { F.bob.x += Math.sin(T * 17) * .25; F.bob.z += Math.cos(T * 13) * .25; }
+    }
+  } else if (F.phase === 'land') {
+    F.landT += dt / .95; const t = Math.min(F.landT, 1);
+    const to = boat.pos.clone().addScaledVector(fwdVec(), .8); to.y = boat.y + 1.3;
+    leapFish.position.lerpVectors(F.landFrom, to, t); leapFish.position.y = lerp(H(F.landFrom.x, F.landFrom.z), to.y, t) + Math.sin(t * Math.PI) * 3.2;
+    leapFish.rotation.set(0, boat.h + Math.PI / 2, Math.sin(t * Math.PI * 3) * .9 + (t - .5) * 2.4);
+    if (F.landT >= 1) { leapFish.visible = false; SFX.flop(); caught(); }
   } else if (F.phase === 'pause') {
-    F.t -= dt; if (F.t <= 0) { F.phase = 'aim'; setHint(isTouch ? 'Tieni premuto per caricare il lancio' : 'Tieni premuto SPAZIO per caricare il lancio'); }
+    F.t -= dt; if (F.t <= 0) { F.phase = 'aim'; setHint(aimHint()); setAct('LANCIA'); }
   }
+  // canna che si piega
+  const ten = F.phase === 'reel' ? F.tension : F.phase === 'bite' ? .4 : 0;
+  rodPivot.rotation.z = lerp(rodPivot.rotation.z, -1.0 + ten * .45 + (F.fs === 'run' && F.phase === 'reel' ? Math.sin(T * 25) * .06 : 0), 1 - Math.exp(-dt * 10));
   if (bobber.visible && F.phase !== 'cast') {
-    bobber.position.x = F.castTo.x; bobber.position.z = F.castTo.z;
-    bobber.position.y = H(F.castTo.x, F.castTo.z) + .08 - F.dip * .35 + Math.sin(T * 3) * .03;
+    const bx = F.phase === 'reel' ? F.bob.x : F.castTo.x, bz = F.phase === 'reel' ? F.bob.z : F.castTo.z;
+    bobber.position.set(bx, H(bx, bz) + .08 - F.dip * .35 + Math.sin(T * 3) * .03, bz);
   }
-  if (fishLine.visible) { const p = lineGeo.attributes.position; p.setXYZ(0, tip.x, tip.y, tip.z); p.setXYZ(1, bobber.position.x, bobber.position.y, bobber.position.z); p.needsUpdate = true; }
+  if (fishLine.visible) {
+    const p = lineGeo.attributes.position; p.setXYZ(0, tip.x, tip.y, tip.z); p.setXYZ(1, bobber.position.x, bobber.position.y, bobber.position.z); p.needsUpdate = true;
+    fishLine.material.color.setRGB(.73 + ten * .27, .73 - ten * .4, .73 - ten * .45); fishLine.material.opacity = .55 + ten * .4;
+  }
 }
 function caught() {
   const k = F.fish; F.phase = 'result'; $('reelWrap').classList.add('hidden'); bobber.visible = false; fishLine.visible = false; setHint('');
   if (k === 'idolo') { idolSequence(); return; }
   R.catches++; S.stats.pescati++;
   const f = FISH[k];
-  if (f.weird) { SFX.weird(); corrPulse = .35; } else SFX.catch();
-  if (F.spot.fossa) { R.fossaCatches++; }
-  else { F.spot.left--; }
+  const q = clamp(1 + (F.perfectHook ? 1 : 0) + (F.snaps === 0 ? 1 : 0), 1, 3);
+  const it = { k, w: F.weight, q }; if (k === 'annegato' && F.ann) it.ann = { id: F.ann.id, nome: F.ann.nome };
+  const rec = S.taccuino[k] || { n: 0, best: 0 }; const isRecord = rec.n > 0 && F.weight > rec.best && f.kg[1] > f.kg[0]; const isNew = rec.n === 0;
+  rec.n++; rec.best = Math.max(rec.best, F.weight); S.taccuino[k] = rec;
+  if (f.weird) { SFX.weird(); corrPulse = .35; } else { SFX.catch(); if (q === 3) setTimeout(SFX.perfect, 350); }
+  if (isRecord || (isNew && !f.weird && !f.junk && !f.item)) setTimeout(SFX.record, 500);
+  if (F.spot.fossa) R.fossaCatches++; else F.spot.left--;
   const full = S.stiva.length >= capacity();
-  let html = `<h2>${f.nome}</h2><div class="subt">${f.desc}</div>`;
-  if (f.p) html += `<div class="row"><span>Valore da Abel</span><span class="r">${price(k)} monete</span></div>`;
+  const nome = fishName(it);
+  let desc = f.desc;
+  if (k === 'annegato' && F.ann) desc = `Pelle grigia, mani palmate, occhi aperti. Al collo, una piastrina d'ottone: <b>${esc(F.ann.nome)}</b>.<br><br><i>${esc(F.ann.desc || '')}</i>`;
+  const stars = (f.junk || f.item) ? '' : `<div class="stars">${'★'.repeat(q)}<i>${'★'.repeat(3 - q)}</i></div>`;
+  let html = `<h2>${nome}</h2>${stars}`;
+  if (!f.item) html += `<div class="kg">${F.weight.toFixed(2).replace('.', ',')} kg</div>`;
+  if (isRecord) html += `<span class="rec">Nuovo record</span>`; else if (isNew && !f.junk && !f.item) html += `<span class="rec">Nuova specie nel taccuino</span>`;
+  html += `<div class="subt">${desc}</div>`;
+  if (f.cursed || k === 'annegato') html += `<div class="row"><span>Abel</span><span class="r" style="color:#c8735f">non lo toccherà</span></div>` + (S.capitolo >= 2 ? `<div class="row"><span>L'uomo in nero</span><span class="r">${itemValue(it, 'nero')} monete</span></div>` : '');
+  else if (f.p) html += `<div class="row"><span>Valore da Abel</span><span class="r">${itemValue(it)} monete</span></div>`;
   html += `<div class="btns">`;
   if (k === 'bottiglia') html += `<button class="pbtn main" id="cOpen">Rompi il sigillo e leggi</button>`;
   else if (f.junk) html += `<button class="pbtn main" id="cThrow">Ributtalo in mare</button>`;
   else if (full) html += `<div class="note">La stiva è piena.</div><button class="pbtn main" id="cThrow">Ributtalo in mare</button>`;
-  else html += `<button class="pbtn main" id="cKeep">Nella stiva (${S.stiva.length + 1}/${capacity()})</button><button class="pbtn" id="cThrow">Ributtalo in mare</button>`;
+  else html += `<button class="pbtn main" id="cKeep">Nella stiva (${S.stiva.length + 1}/${capacity()})</button><button class="pbtn" id="cThrow">${f.cursed || k === 'annegato' ? 'Restituiscilo al mare' : 'Ributtalo in mare'}</button>`;
   html += `</div>`;
-  panel(html);
+  const p = panel(html); p.classList.add('catch'); p.classList.toggle('cursedP', !!(f.cursed || k === 'annegato'));
   const after = () => {
     closePanel();
     if (k === 'denti') { S.flags.denti = true; say([['TU', `Ventidue anni su questa costa. Mai vista un'aringa coi denti.`]], afterCatch); return; }
@@ -1050,18 +1334,28 @@ function caught() {
       fbPush('annali', { nome: S.nome, pesce: f.nome, giorno: S.giorno, ts: Date.now() });
       say([['TU', R.fossaCatches === 1 ? `Non ho mai visto un pesce così. Ha abboccato subito. Quasi... con impazienza.` : `Ancora. Appena tocca l'acqua, abboccano. Come se volessero essere presi.`]], afterCatch); return;
     }
-    if (f.p && price(k) >= 30) fbPush('annali', { nome: S.nome, pesce: f.nome, giorno: S.giorno, ts: Date.now() });
+    if (k === 'annegato' && F.ann) {
+      fbPush('annali', { nome: S.nome, pesce: 'Annegato «' + F.ann.nome + '»', giorno: S.giorno, ts: Date.now() });
+      if (F.ann.id) fbPush('annegati/' + F.ann.id + '/ripescato', { nome: S.nome, ts: Date.now() });
+      say([['TU', `Ha un nome. Era uno di noi. Un pescatore.`], ['TU', `E sorride.`]], afterCatch); return;
+    }
+    if (f.cursed && !R['said_' + k]) {
+      R['said_' + k] = true;
+      const L = { occhi: `Quegli occhi... li ho già visti. Non so dove. Non so su chi.`, dita: `Le dita si sono chiuse intorno al mio pollice. Come fa un neonato.`, respira: `Respira. Fuori dall'acqua, respira.`, anello: `E.M. Come la bottiglia. E. Marsh. E M.A....` };
+      say([['TU', L[k]]], afterCatch); return;
+    }
+    if (f.p && !f.cursed && itemValue(it) >= 30) fbPush('annali', { nome: S.nome, pesce: f.nome + ' ' + F.weight.toFixed(1) + 'kg', giorno: S.giorno, ts: Date.now() });
     afterCatch();
   };
-  bind('cKeep', () => { S.stiva.push(k); after(); });
-  bind('cThrow', () => { SFX.splash(); after(); });
+  bind('cKeep', () => { S.stiva.push(it); after(); });
+  bind('cThrow', () => { SFX.splash(); if (f.cursed || k === 'annegato') { S.scelte.buttati++; setTimeout(() => whisper(pick(['Grazie.', 'Ti ricorderemo.', 'Non è ancora finita.']), 2200), 600); } after(); });
   bind('cOpen', () => { closePanel(); S.flags.bottiglia = true; readBottle(); });
 }
 function afterCatch() {
   saveGame();
-  if (!F.spot.fossa && F.spot.left <= 0) { F.spot.active = false; F.spot.g.visible = false; const s = F.spot; setTimeout(() => placeSpot(s), 4000); stopFishing('Il banco si è spostato altrove.'); return; }
-  if (S.stiva.length >= capacity()) { stopFishing('La stiva è piena. Torna al porto da Abel.'); return; }
-  F.phase = 'aim'; setHint(isTouch ? 'Tieni premuto per caricare il lancio' : 'Tieni premuto SPAZIO per caricare il lancio'); actEl.innerHTML = 'LANCIA';
+  if (!F.spot.fossa && F.spot.left <= 0) { F.spot.active = false; F.spot.g.visible = false; const s = F.spot; setTimeout(() => placeSpot(s), 4000); stopFishing('Il banco si è spostato altrove. Cerca altri cerchi sull\'acqua.'); return; }
+  if (S.stiva.length >= capacity()) { stopFishing('La stiva è piena. Torna al porto.'); return; }
+  F.phase = 'aim'; setHint(aimHint()); setAct('LANCIA');
 }
 function readBottle() {
   SFX.weird();
@@ -1079,21 +1373,32 @@ function readBottle() {
    STORIA
    ========================================================= */
 const DOCK_POS = () => { boat.pos.set(DOCK.x, 0, DOCK.z); boat.h = Math.PI; boat.v = 0; };
+const CHAP = { 1: { nome: 'Il Pescato', primo: 1, ultimo: 3 }, 2: { nome: 'La Stiva', primo: 4, ultimo: 6 }, 3: { nome: 'La Margaret' }, 4: { nome: 'Il Pescatore' }, 5: { nome: 'Ciò che Dorme Sotto la Fossa' } };
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
+const lastDay = () => CHAP[S.capitolo].ultimo || S.giorno;
+const cursedInHold = () => S.stiva.filter(it => FISH[it.k].cursed || it.k === 'annegato');
 function startDay(first = false) {
   resetRuntime(); clock = 360; S.stiva = []; DOCK_POS(); mode = 'cut';
-  if (S.giorno === 3 && S.flags.idolo && S.capitolo === 1) delete S.flags.idolo;
+  if (S.capitolo === 1 && S.giorno === 3 && S.flags.idolo) delete S.flags.idolo;
+  if (S.capitolo === 2) delete S.flags.idolo;
   actEl.classList.remove('cursed');
   closePanel(); $('fishUI').classList.add('hidden'); bobber.visible = false; fishLine.visible = false;
+  const d = S.giorno, ch = S.capitolo;
   // ambiente per giorno
-  const d = S.giorno;
-  corr = d === 1 ? 0 : d === 2 ? .08 : .16; storm = d === 1 ? .8 : d === 2 ? 1.05 : .35;
-  scene.fog.density = d === 1 ? .0042 : d === 2 ? .0062 : .0075;
-  R.overcast = d === 1 ? .1 : d === 2 ? .5 : .8; rainAmt = d === 2 ? .35 : 0;
-  monolith.visible = d >= 3; jonah.visible = true; jonahLantern.position.set(-6.6, 1.95, 18.4);
-  idolMesh.visible = false; boat.hullMat.color.set('#3b2a1e');
+  const ENVD = { 1: [0, .8, .0042, .1, 0], 2: [.08, 1.05, .0062, .5, .35], 3: [.16, .35, .0075, .8, 0], 4: [.2, .9, .0062, .6, .15], 5: [.27, 1.25, .007, .75, .45], 6: [.34, .45, .0078, .85, 0] }[d] || [.3, .8, .007, .8, .2];
+  [corr, storm, scene.fog.density, R.overcast, rainAmt] = ENVD;
+  monolith.visible = d >= 3;
+  jonah.visible = ch === 1 || d >= 5; jonahLantern.position.set(-6.6, 1.95, 18.4);
+  jonah.children[0].material.color.set(ch >= 2 ? '#26302c' : '#4b3a28');
+  if (ch === 2 && d === 4) jonahLantern.position.set(-6.2, 1.82, 19.5);
+  jonahLight.color.set(ch >= 2 && d >= 5 ? 0x9dffc0 : 0xffa850);
+  uomoNero.visible = ch === 2;
+  idolMesh.visible = ch >= 2; boat.hullMat.color.set(ch >= 2 ? '#30261c' : '#3b2a1e');
   SPOTS.forEach(s => { if (!s.fossa) { placeSpot(s); } });
-  fossaSpot.active = d >= 3; fossaSpot.g.visible = d >= 3;
+  fossaSpot.active = ch === 1 && d >= 3; fossaSpot.g.visible = fossaSpot.active;
   waterU.uFossaR.value = d >= 3 ? 55 : 0;
+  // Capitolo II: il debito "matura"
+  if (ch === 2 && !S.flags.ch2) { S.flags.ch2 = true; S.flags.debitoCh1 = !!S.flags.debitoPagato; S.debito = S.flags.debitoPagato ? 400 : S.debito + 150; delete S.flags.debitoPagato; }
   saveGame();
   setHud(true);
   const go = () => { mode = 'sail'; SFX.bell(); setHud(true); };
@@ -1101,7 +1406,7 @@ function startDay(first = false) {
     showCard([{ t: 'Ashcombe, 1927.', c: 'sub' }, 'Il villaggio vive di pesce e di silenzio.', `Tuo padre ti ha lasciato due cose: una barca, la <i>Margaret</i>,`, `e un debito di <b>${S.debito} monete</b> con la Compagnia Marrow.`, 'Hai tre giorni.', { t: 'Giorno 1', c: 'ttl' }], () => {
       say([
         ['ABEL', `Eccoti, {nome}. La Margaret ha ancora un buon legno. Come tuo padre.`],
-        ['ABEL', `Porta pesce e io lo compro. Sgombri, aringhe, merluzzi... quello che il mare dà.`],
+        ['ABEL', `Porta pesce e io lo compro. Sgombri, aringhe, merluzzi... quello che il mare dà. Più è grosso, più te lo pago.`],
         ['ABEL', `Una cosa sola. Rientra prima del buio. Ad Ashcombe nessuno pesca di notte.`],
         ['TU', `Perché?`],
         ['ABEL', `...Perché no.`],
@@ -1119,7 +1424,7 @@ function startDay(first = false) {
         ['JONAH', `Il vento non conosce le parole.`]
       ], go);
     });
-  } else {
+  } else if (d === 3) {
     showCard([{ t: 'Giorno 3', c: 'ttl' }, { t: 'Il mare è immobile. Liscio come vetro nero.', c: 'sub' }, { t: 'Non si sente un solo gabbiano.', c: 'sub' }], () => {
       say([
         ['ABEL', `Gli uomini della Compagnia arrivano stasera, {nome}. Vogliono le loro ${S.debito} monete. O la barca.`],
@@ -1130,6 +1435,46 @@ function startDay(first = false) {
         ['JONAH', `Se ci vai... non tirare su niente che non abbia le pinne.`],
         ['TU', `(Sulla bussola compare un nuovo segno. La Fossa.)`]
       ], () => { S.flags.fossaNota = true; saveGame(); go(); });
+    });
+  } else if (d === 4) {
+    showCard([{ t: 'Capitolo II', c: 'sub' }, { t: 'LA STIVA', c: 'ttl' }, { t: 'All\'alba hai riportato l\'idolo alla barca. Non ricordi di averlo fatto.', c: 'sub' }, { t: 'Ora è sul ponte della Margaret, rivolto verso il mare.', c: 'grn' }, { t: 'Giorno 4', c: 'ttl' }], () => {
+      say([
+        ['ABEL', `Gli uomini della Compagnia sono passati, ieri sera. La barca non l'hanno presa.`],
+        S.flags.debitoCh1
+          ? ['ABEL', `Hanno detto che il saldo di tuo padre copriva «solo la prima parte». Ora ne vogliono altre ${S.debito}.`]
+          : ['ABEL', `Hanno detto che possono aspettare. Che il debito «matura». Adesso sono ${S.debito} monete.`],
+        ['ABEL', `E Jonah... nessuno l'ha più visto. Da quella notte.`],
+        ['UOMO IN NERO', `Buongiorno, {nome}. Compagnia Marrow.`],
+        ['UOMO IN NERO', `Io compro quello che il signor Abel non vuole. Qualunque cosa esca dall'acqua. Pago il triplo.`],
+        ['UOMO IN NERO', `Lei peschi. Al resto pensa la Compagnia.`],
+        ['TU', `(Ha la pelle lucida e umida, come se fosse appena uscito dal mare. Eppure oggi non piove.)`]
+      ], go);
+    });
+  } else if (d === 5) {
+    const thrown = S.flags.idoloGettato === 4;
+    showCard(thrown
+      ? [{ t: 'Giorno 5', c: 'ttl' }, { t: 'Ieri sera hai gettato l\'idolo dal molo. L\'hai sentito affondare.', c: 'sub' }, { t: 'Stamattina era nella stiva.', c: 'grn', sfx: 'heart' }, { t: 'Asciutto. Tiepido.', c: 'grn' }]
+      : [{ t: 'Giorno 5', c: 'ttl' }, { t: 'La nebbia non si è alzata.', c: 'sub' }, { t: 'Tutto il paese ha l\'odore della tua stiva.', c: 'sub' }], () => {
+      say([
+        ['TU', `Jonah! Dove sei stato?`],
+        ['JONAH', `Sotto il molo, ragazzo. Ad ascoltare.`],
+        ['JONAH', `Non c'è niente da temere, laggiù. È così calmo. Così... affollato.`],
+        ['TU', `(Ha i vestiti fradici. Gocciola sulle assi. E non sbatte le palpebre. Nemmeno una volta.)`],
+        ['ABEL', `{nome}, la gente non compra più il mio pesce. Dicono che il pesce sbagliato lo porti tu.`],
+        ['ABEL', `Che ce l'hai nella stiva come una malattia.`]
+      ], go);
+    });
+  } else {
+    const thrown = S.flags.idoloGettato === 5;
+    const pro = S.scelte.nero > S.scelte.buttati;
+    showCard([{ t: 'Giorno 6', c: 'ttl' }, { t: 'Le finestre del paese sono chiuse. Tutte.', c: 'sub' }, { t: 'Sulla porta di casa tua qualcuno ha inchiodato una lisca.', c: 'sub' }].concat(thrown ? [{ t: 'L\'idolo è di nuovo nella stiva. Non ti sei nemmeno stupito.', c: 'grn' }] : []), () => {
+      say([
+        pro ? ['UOMO IN NERO', `La Compagnia è molto soddisfatta di lei, {nome}. Suo padre era altrettanto... collaborativo.`]
+            : ['UOMO IN NERO', `Lei restituisce la merce al mare, {nome}. La Compagnia lo trova sentimentale. Il mare non dimentica i regali. Nemmeno noi.`],
+        ['JONAH', `Stanotte la Margaret ti porterà dove deve andare.`],
+        ['JONAH', `Non opporti. Fa meno male.`],
+        ['ABEL', `Torna prima del buio. Ti prego. Almeno oggi.`]
+      ], go);
     });
   }
 }
@@ -1148,28 +1493,35 @@ function dockBoat() {
     ], openPort);
     return;
   }
-  if (!R.portVisited && S.giorno === 1) { R.portVisited = true; }
   openPort();
 }
 function openPort() {
   mode = 'port';
-  const n = S.stiva.length; const canHome = S.giorno < 3 || S.flags.idolo;
-  const p = panel(`
+  const n = S.stiva.length, ch = S.capitolo, last = lastDay();
+  const canHome = ch !== 1 || S.giorno < 3 || S.flags.idolo;
+  const nCur = cursedInHold().length;
+  const idolBtn = ch === 2 && S.giorno < 6 && S.flags.idoloGettato !== S.giorno;
+  panel(`
     <h2>Porto di Ashcombe</h2>
     <div class="subt">Giorno ${S.giorno} · ${fmtClock()} · ${S.soldi} monete · debito ${S.debito}</div>
     <div class="btns">
-      <button class="pbtn" id="pSell"><span>Banco di Abel — vendi</span><span class="r">${n} nella stiva</span></button>
+      <button class="pbtn" id="pSell"><span>Banco di Abel: vendi</span><span class="r">${n} nella stiva</span></button>
+      ${ch === 2 ? `<button class="pbtn" id="pNero"><span>L'uomo in nero</span><span class="r">${nCur ? nCur + ' maledetti' : 'compra il triplo'}</span></button>` : ''}
+      ${ch === 2 && nCur ? `<button class="pbtn" id="pDump"><span>Restituisci al mare il pescato sbagliato</span><span class="r">${nCur}</span></button>` : ''}
       <button class="pbtn" id="pShop"><span>Bottega del porto</span><span class="r">migliorie</span></button>
       <button class="pbtn" id="pDebt" ${S.debito <= 0 ? 'disabled' : ''}><span>Paga la Compagnia Marrow</span><span class="r">${S.debito > 0 ? S.debito + ' dovuti' : 'saldato'}</span></button>
       <button class="pbtn" id="pTalk"><span>${jonah.visible ? 'Parla con Jonah' : 'La lanterna di Jonah'}</span><span class="r">…</span></button>
-      <button class="pbtn" id="pHome"><span>Torna a casa</span><span class="r">${S.giorno < 3 ? 'fine giornata' : (S.flags.idolo ? 'la notte' : '—')}</span></button>
+      <button class="pbtn" id="pBook"><span>Taccuino del pescato</span><span class="r">${Object.keys(S.taccuino).length} specie</span></button>
+      ${idolBtn ? `<button class="pbtn" id="pIdol"><span>Getta l'idolo in mare dal molo</span><span class="r">✶</span></button>` : ''}
+      <button class="pbtn" id="pHome"><span>Torna a casa</span><span class="r">${S.giorno < last ? 'fine giornata' : (ch === 1 ? (S.flags.idolo ? 'la notte' : '—') : 'la notte')}</span></button>
       <button class="pbtn main" id="pSail" ${S.flags.idolo ? 'disabled' : ''}>Salpa</button>
     </div>
     ${!canHome ? '<div class="note">Non puoi tornare a casa a mani vuote. Non stasera.</div>' : ''}`);
-  bind('pSell', openSell); bind('pShop', openShop); bind('pDebt', payDebt); bind('pTalk', talkJonah);
+  bind('pSell', openSell); bind('pShop', openShop); bind('pDebt', payDebt); bind('pTalk', talkJonah); bind('pBook', openBook);
+  bind('pNero', openNero); bind('pDump', dumpCursed); bind('pIdol', throwIdol);
   bind('pHome', () => {
     if (!canHome) { closePanel(); say([['TU', `Se torno a casa adesso, stasera la Compagnia si prende la Margaret.`], ['TU', `E poi... qualcosa mi trattiene. Il mare mi sta aspettando.`]], openPort); return; }
-    if (S.giorno < 3 && clock < 900 && !isNight()) { closePanel(); say([['ABEL', `Già a casa? È ancora presto, il sole è alto.`]], () => confirmHome()); return; }
+    if (!(ch === 1 && S.flags.idolo) && clock < 900 && !isNight()) { closePanel(); say([['ABEL', `Già a casa? È ancora presto, il sole è alto.`]], () => confirmHome()); return; }
     goHome();
   });
   bind('pSail', () => { closePanel(); mode = 'sail'; });
@@ -1178,35 +1530,84 @@ function confirmHome() {
   panel(`<h2>Chiudere la giornata?</h2><div class="subt">Il pesce non venduto marcirà nella stiva.</div><div class="btns"><button class="pbtn main" id="hY">Sì, vado a casa</button><button class="pbtn" id="hN">No, resto</button></div>`);
   bind('hY', goHome); bind('hN', openPort);
 }
+function groupRows(items, buyer) {
+  const g = {}; let tot = 0;
+  for (const it of items) { const key = it.k + (it.ann ? it.ann.nome : ''); g[key] = g[key] || { it, n: 0, v: 0 }; g[key].n++; const v = buyer ? itemValue(it, buyer) : 0; g[key].v += v; tot += v; }
+  return { g, tot };
+}
 function openSell() {
-  const counts = {}; S.stiva.forEach(k => counts[k] = (counts[k] || 0) + 1);
-  let tot = 0, rows = '';
-  for (const k in counts) {
-    const refused = k === 'denti'; const half = k === 'cieco'; const mult = S.giorno === 3 && !FISH[k].weird ? .85 : 1;
-    const v = refused ? 0 : Math.round(price(k) * (half ? .5 : 1) * mult) * counts[k]; tot += v;
-    rows += `<div class="row ${refused ? 'bad' : ''}"><span>${FISH[k].nome} × ${counts[k]}</span><span class="r">${refused ? 'rifiutato' : v + ' m.'}</span></div>`;
-  }
+  const ok = S.stiva.filter(it => !abelRefuses(it)), no = S.stiva.filter(abelRefuses);
+  const { g, tot } = groupRows(ok, 'abel');
+  let rows = '';
+  for (const key in g) { const { it, n, v } = g[key]; rows += `<div class="row"><span>${fishName(it)} × ${n}</span><span class="r">${v} m.</span></div>`; }
+  const gn = groupRows(no).g;
+  for (const key in gn) { const { it, n } = gn[key]; rows += `<div class="row bad"><span>${fishName(it)} × ${n}</span><span class="r">rifiutato</span></div>`; }
   if (!rows) rows = `<div class="note">La stiva è vuota.</div>`;
   panel(`<h2>Banco di Abel</h2><div class="subt">«Fammi vedere cosa hai portato.»</div>${rows}
     <div class="row"><span><b>Totale</b></span><span class="r"><b>${tot} monete</b></span></div>
-    <div class="btns"><button class="pbtn main" id="sAll" ${S.stiva.length ? '' : 'disabled'}>Vendi tutto</button><button class="pbtn" id="sBack">Indietro</button></div>`);
+    <div class="btns"><button class="pbtn main" id="sAll" ${ok.length || no.some(it => it.k === 'denti') ? '' : 'disabled'}>Vendi ad Abel</button><button class="pbtn" id="sBack">Indietro</button></div>`);
   bind('sBack', openPort);
   bind('sAll', () => {
-    const had = { ...counts }; S.soldi += tot; S.stats.venduti += S.stiva.length; S.stats.guadagno += tot; S.stiva = []; SFX.coin(); saveGame();
+    const had = {}; ok.forEach(it => had[it.k] = 1); no.forEach(it => had[it.k] = 1);
+    S.soldi += tot; S.stats.venduti += ok.length; S.stats.guadagno += tot;
+    S.stiva = no.filter(it => it.k !== 'denti'); if (tot) SFX.coin(); saveGame();
     const lines = [];
     if (had.denti) lines.push(['ABEL', `Questa no. Buttala in mare, {nome}. E non dire a nessuno dove l'hai presa.`]);
     if (had.cieco) lines.push(['ABEL', `Merluzzi ciechi... te li pago la metà. La gente non li vuole. Dice che portano male.`]);
     if (had.lanterna) lines.push(['ABEL', `Questi... li prendo. Non chiedermi a chi li rivendo. E tu non dirmi dove li hai pescati.`]);
-    if (!lines.length && tot > 0) lines.push(['ABEL', pick([`Buon pesce. Onesto.`, `Tuo padre sarebbe contento.`, `Questo lo vendo entro sera.`])]);
-    closePanel(); if (lines.length) say(lines, openPort); else openPort();
+    if (S.stiva.length && S.capitolo === 2) lines.push(['ABEL', pick([`Quella roba tienila lontana dal mio banco. Non la voglio nemmeno vedere.`, `Copri quella cassa, {nome}. Mi sta guardando.`])]);
+    if (!lines.length && tot > 0) lines.push(['ABEL', tot >= 120 ? pick([`Che pescata! Non vedevo pesce così da anni.`, `Tuo padre non ha mai portato una stiva così.`]) : pick([`Buon pesce. Onesto.`, `Tuo padre sarebbe contento.`, `Questo lo vendo entro sera.`])]);
+    closePanel(); if (tot) toast(`+${tot} monete`); if (lines.length) say(lines, openPort); else openPort();
   });
+}
+function openNero() {
+  const cur = cursedInHold(); const { g, tot } = groupRows(cur, 'nero');
+  let rows = '';
+  for (const key in g) { const { it, n, v } = g[key]; rows += `<div class="row"><span>${fishName(it)} × ${n}</span><span class="r">${v} m.</span></div>`; }
+  if (!rows) rows = `<div class="note">«Non ha niente per me, oggi? Peccato. La Compagnia è paziente.»</div>`;
+  panel(`<h2>L'uomo in nero</h2><div class="subt">«Compagnia Marrow. Compriamo ciò che il mare restituisce.»</div>${rows}
+    <div class="row"><span><b>Offerta</b></span><span class="r"><b>${tot} monete</b></span></div>
+    <div class="btns"><button class="pbtn main" id="nSell" ${cur.length ? '' : 'disabled'}>Vendi alla Compagnia</button><button class="pbtn" id="nBack">Indietro</button></div>
+    <div class="note">Quello che vendi a lui, e quello che restituisci al mare, verrà ricordato.</div>`);
+  bind('nBack', openPort);
+  bind('nSell', () => {
+    S.soldi += tot; S.stats.guadagno += tot; S.scelte.nero += cur.length; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.coin(); saveGame();
+    closePanel(); toast(`+${tot} monete`); corrPulse = .3;
+    const first = !S.flags.primaVenditaNero; S.flags.primaVenditaNero = true;
+    say(first ? [['UOMO IN NERO', `Eccellente. Vede? Non era difficile.`], ['TU', `(Infila i pesci in un sacco di tela. Il sacco si muove. Lui non sembra notarlo.)`]]
+      : [['UOMO IN NERO', pick([`La Compagnia ringrazia.`, `Sempre un piacere, {nome}.`, `Suo padre ci portava esattamente gli stessi. Lo sapeva?`])]], openPort);
+  });
+}
+function dumpCursed() {
+  const cur = cursedInHold(); if (!cur.length) return openPort();
+  closePanel(); S.scelte.buttati += cur.length; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.splash(); saveGame();
+  setTimeout(() => whisper(pick(['Grazie, {nome}.', 'Ce ne ricorderemo.', 'Non basterà. Ma grazie.']).replace('{nome}', S.nome), 2600), 700);
+  say([['TU', `Li faccio scivolare in acqua dal molo, uno alla volta.`], ['TU', `Non affondano subito. Restano a galla un momento, a guardarmi. Poi scendono.`]], openPort);
+}
+function throwIdol() {
+  closePanel(); S.flags.idoloGettato = S.giorno; S.scelte.idoloGettato++; saveGame();
+  say([['TU', `Basta. Lo prendo e lo lancio, più lontano che posso.`]], () => {
+    idolMesh.visible = false; SFX.splash(); setTimeout(SFX.heart, 900); setTimeout(SFX.heart, 1500);
+    say([['TU', `Il tonfo. I cerchi sull'acqua. Poi niente.`], ['TU', `...Per un attimo mi è sembrato che il mare respirasse di sollievo. O di fame.`]], openPort);
+  });
+}
+function openBook() {
+  const order = ['aringa', 'sgombro', 'merluzzo', 'spigola', 'grongo', 'rana', 'stivale', 'cieco', 'denti', 'lanterna', 'occhi', 'dita', 'respira', 'anello', 'annegato'];
+  let rows = '';
+  for (const k of order) {
+    const r = S.taccuino[k];
+    if (!r) { if (!FISH[k].weird) rows += `<div class="row" style="opacity:.4"><span>? ? ?</span><span class="r">—</span></div>`; continue; }
+    rows += `<div class="row"><span>${FISH[k].nome} <small style="opacity:.6">× ${r.n}</small></span><span class="r">${FISH[k].kg[1] > FISH[k].kg[0] ? 'record ' + r.best.toFixed(2).replace('.', ',') + ' kg' : '—'}</span></div>`;
+  }
+  panel(`<h2>Taccuino</h2><div class="subt">Tutto quello che il mare ti ha dato. ${S.stats.pescati} prede in tutto.</div>${rows}<div class="btns"><button class="pbtn main" id="bBack">Indietro</button></div>`);
+  bind('bBack', openPort);
 }
 function openShop() {
   const U = CFG.upgrade; const u = S.upgrade;
   const item = (id, name, desc, cost, lvl, max) => `<button class="pbtn" id="${id}" ${lvl >= max || S.soldi < cost ? 'disabled' : ''}><span>${name}<br><small style="font-family:'IM Fell English';font-size:13px;opacity:.7">${desc}</small></span><span class="r">${lvl >= max ? 'preso' : cost + ' m.'}</span></button>`;
   panel(`<h2>Bottega del porto</h2><div class="subt">Hai ${S.soldi} monete. Ricorda il debito: ${S.debito}.</div><div class="btns">
     ${item('uSt', 'Stiva più grande', '+4 posti per il pescato', U.stiva, u.stiva, 1)}
-    ${item('uCa', 'Canna in bambù di Calcutta', 'Zona di recupero più ampia, più tempo per ferrare', U.canna, u.canna, 1)}
+    ${item('uCa', 'Canna in bambù di Calcutta', 'Recuperi più in fretta, più tempo per ferrare', U.canna, u.canna, 1)}
     ${item('uLa', 'Lanterna a petrolio nuova', 'Più luce quando cala il buio', U.lanterna, u.lanterna, 1)}
     <button class="pbtn" id="uBack">Indietro</button></div>`);
   const buy = (k, c) => { if (S.soldi < c) return; S.soldi -= c; S.upgrade[k]++; SFX.coin(); saveGame(); openShop(); };
@@ -1216,8 +1617,13 @@ function payDebt() {
   if (S.soldi <= 0) { closePanel(); say([['ABEL', `Con le tasche vuote non si paga nessuno, {nome}.`]], openPort); return; }
   const pay = Math.min(S.soldi, S.debito); S.soldi -= pay; S.debito -= pay; SFX.coin(); saveGame();
   closePanel();
-  if (S.debito <= 0) { S.flags.debitoPagato = true; saveGame(); say([['ABEL', `Lascio io la busta agli uomini della Compagnia. Il debito di tuo padre è chiuso.`], ['ABEL', `...Almeno quello.`]], openPort); }
-  else say([['ABEL', `Ho messo da parte ${pay} monete per la Compagnia. Ne mancano ancora ${S.debito}.`]], openPort);
+  const who = S.capitolo === 2 ? 'UOMO IN NERO' : 'ABEL';
+  if (S.debito <= 0) {
+    S.flags.debitoPagato = true; saveGame();
+    say(S.capitolo === 2 ? [['UOMO IN NERO', `Saldato. La Compagnia prende nota.`], ['UOMO IN NERO', `Ma vede, {nome}, il debito della sua famiglia non è mai stato una questione di monete.`]]
+      : [['ABEL', `Lascio io la busta agli uomini della Compagnia. Il debito di tuo padre è chiuso.`], ['ABEL', `...Almeno quello.`]], openPort);
+  }
+  else say([[who, S.capitolo === 2 ? `${pay} monete. Ne mancano ${S.debito}. Non c'è fretta. Noi aspettiamo sempre.` : `Ho messo da parte ${pay} monete per la Compagnia. Ne mancano ancora ${S.debito}.`]], openPort);
 }
 function talkJonah() {
   closePanel();
@@ -1225,25 +1631,28 @@ function talkJonah() {
   const L = {
     1: [[`JONAH`, `Vedi quel faro? L'hanno costruito i miei nonni. Dicono per le navi.`], ['JONAH', `Io dico che l'hanno costruito per tenere qualcosa lontano dalla riva.`]],
     2: [[`JONAH`, `Stamattina ho tirato su la rete. Dentro c'era un granchio con la corazza... morbida. Come pelle.`], ['JONAH', `L'ho ributtato. Mi guardava.`]],
-    3: [[`JONAH`, `Sud-est, oltre lo Scoglio Nero. Segui la bussola.`], ['JONAH', `E torna prima che il faro si spenga. Perché stanotte si spegnerà.`]]
+    3: [[`JONAH`, `Sud-est, oltre lo Scoglio Nero. Segui la bussola.`], ['JONAH', `E torna prima che il faro si spenga. Perché stanotte si spegnerà.`]],
+    5: [[`JONAH`, `Quello che peschi adesso non è pesce, ragazzo. È gente che torna a vedere com'è l'aria.`], ['JONAH', `Se lo vendi a quello là, va dove va. Se lo ridai al mare, torna giù ad aspettare.`], ['TU', `Ad aspettare cosa?`], ['JONAH', `Te.`]],
+    6: [[`JONAH`, `Tuo padre era seduto qui, l'ultima sera. Proprio dove sono io.`], ['JONAH', `Anche lui ha provato a buttarlo in mare, sai. Tre volte.`], ['TU', `(Una goccia gli scende sulla guancia, fino all'occhio aperto. Non sbatte le palpebre.)`]]
   };
   say(L[S.giorno] || L[1], openPort);
 }
 function goHome() {
   closePanel();
-  if (S.giorno < 3) {
+  if (S.giorno < lastDay()) {
     const lost = S.stiva.length; S.stiva = [];
     fadeTo(1, () => {
       S.giorno++; saveGame(); fadeTo(0);
       if (lost) toast(`Il pesce lasciato nella stiva è marcito.`);
       startDay();
     });
-  } else finale();
+  } else if (S.capitolo === 1) finale(); else finale2();
 }
 function lostAtNight() {
+  if (S.capitolo === 2 && S.giorno >= 6) { finale2(); return; }
   mode = 'cut'; S.stiva = [];
   showCard([{ t: 'Il buio ti ha inghiottito.', c: 'sub' }, 'Ricordi solo la luce del faro, lontana, sempre più lontana.', 'E una voce, sotto la chiglia, che contava le tue assi.', { t: 'Ti svegli all\'alba, sul molo. Bagnato. La stiva è vuota.', c: 'sub' }], () => {
-    S.giorno = Math.min(3, S.giorno + 1); saveGame(); startDay();
+    S.giorno = Math.min(lastDay(), S.giorno + 1); saveGame(); startDay();
   });
 }
 
@@ -1280,8 +1689,9 @@ function idolSequence() {
 }
 function finale() {
   mode = 'end'; setHud(false); R.silence = true;
-  S.capitolo = 2; S.flags.capitolo1 = true; S.flags.finaleTs = Date.now(); saveGame();
-  fbPush('dispersi', { nome: S.nome, debitoPagato: !!S.flags.debitoPagato, ts: Date.now() });
+  const paid = !!S.flags.debitoPagato;
+  S.capitolo = 2; S.giorno = 4; S.flags.capitolo1 = true; S.flags.finaleTs = Date.now(); delete S.flags.idolo; S.stiva = []; saveGame();
+  fbPush('dispersi', { nome: S.nome, debitoPagato: paid, ts: Date.now() });
   fadeTo(1, () => {
     fadeTo(0);
     showCard([
@@ -1296,12 +1706,69 @@ function finale() {
     ], () => {
       showCard([
         { t: 'Capitolo I', c: 'sub' }, { t: 'IL PESCATO', c: 'ttl' },
-        { t: S.flags.debitoPagato ? 'Il debito con la Compagnia è saldato.' : 'Gli uomini della Compagnia Marrow non sono venuti, quella sera. Nessuno sa perché.', c: 'sub' },
-        { t: 'Il mare ricorda il tuo nome, {nome}.', c: 'grn' },
-        { t: 'Continua nel Capitolo II...', c: 'sub' }
-      ], () => { fadeTo(0); R.silence = false; showMenu(); }, { step: 1300 });
+        { t: paid ? 'Il debito con la Compagnia è saldato.' : 'Gli uomini della Compagnia Marrow non sono venuti, quella sera. Nessuno sa perché.', c: 'sub' },
+        { t: 'Non sei stato tu a pescare l\'idolo.', c: 'grn' },
+        { t: 'È stato lui a scegliere te.', c: 'grn' }
+      ], () => { R.silence = false; chapterBreak(2); }, { step: 1300 });
     }, { step: 2300 });
   }, 1500);
+}
+// fine del Capitolo II: la Margaret ti porta alla Fossa da sola
+function finale2() {
+  mode = 'end'; setHud(false); closePanel(); $('fishUI').classList.add('hidden'); R.silence = true;
+  const pro = S.scelte.nero > S.scelte.buttati;
+  fadeTo(1, () => {
+    const a = Math.atan2(FOSSA.x - (FOSSA.x + 40), FOSSA.z - (FOSSA.z + 34));
+    boat.pos.set(FOSSA.x + 40, 0, FOSSA.z + 34); boat.h = a; boat.v = 0;
+    clock = 213; corr = .55; storm = .3; rainAmt = 0; scene.fog.density = .011; R.overcast = .9; R.beamOn = false;
+    waterU.uFossaR.value = 55; monolith.visible = true; idolMesh.visible = true; uomoNero.visible = false;
+    mode = 'drift'; R.eyesOn = true; R.eyesT = 0; R.dronePulse = .3;
+    setTimeout(() => {
+      fadeTo(0);
+      say([
+        ['TU', `...Freddo.`],
+        ['TU', `Ho le mani sul timone. Sono al timone. Non ricordo di essere uscito.`],
+        ['TU', `Non c'è terra. Non c'è il faro. Solo mare nero, e sotto una luce verde che respira.`],
+        ['TU', `La Fossa. La Margaret mi ha portato alla Fossa. Da sola.`]
+      ], () => {
+        SFX.heart(); setTimeout(SFX.heart, 800);
+        whisper(`Bentornato, ${S.nome}.`, 4000);
+        setTimeout(() => {
+          R.eyesOn = false; R.silence = true;
+          S.capitolo = 3; S.giorno = 7; S.flags.capitolo2 = true; S.stiva = []; saveGame();
+          fbPush('dispersi', { nome: S.nome, capitolo: 2, ts: Date.now() });
+          fadeTo(1, () => {
+            fadeTo(0);
+            showCard([
+              pro ? 'Dalla stiva saliva un rumore di unghie contro il legno. Tutti i pesci che avevi venduto. Anche quelli che non c\'erano più.'
+                  : 'Intorno alla barca nuotavano in cerchio i pesci che avevi restituito al mare. Come per proteggerti. O per trattenerti.',
+              { t: 'L\'idolo, sul ponte, era girato verso di te.', c: 'grn', sfx: 'stinger' },
+              { t: 'Capitolo II', c: 'sub' }, { t: 'LA STIVA', c: 'ttl' },
+              { t: `Hai venduto ${S.scelte.nero} pesci sbagliati alla Compagnia. Ne hai restituiti ${S.scelte.buttati} al mare.`, c: 'sub' },
+              { t: 'Il mare se ne ricorderà.', c: 'grn' }
+            ], () => { R.silence = false; chapterBreak(3); }, { step: 1700 });
+          }, 1400);
+        }, 4200);
+      });
+    }, 1200);
+  }, 1500);
+}
+function chapterBreak(n) {
+  const c = CHAP[n];
+  if (n === 2) {
+    showCard([{ t: `Capitolo ${ROMAN[n]}`, c: 'sub' }, { t: c.nome.toUpperCase(), c: 'ttl' }, { t: 'Ogni giorno il pescato sarà più sbagliato.', c: 'sub' }], () => beginGame(), { step: 1100 });
+  } else {
+    showCard([{ t: `Capitolo ${ROMAN[n]} — ${c.nome}`, c: 'sub' }, { t: 'Arriverà presto.', c: 'grn' }, { t: 'La tua partita è salvata. La Margaret ti aspetta.', c: 'sub' }], () => { fadeTo(0); showMenu(); }, { step: 1100 });
+  }
+}
+// Chiamata alla fine del Capitolo V: il giocatore diventa un pesce raro nelle partite degli altri.
+function diventaAnnegato() {
+  const sc = S.scelte, parti = [];
+  parti.push(sc.nero > sc.buttati ? `Vendette ${sc.nero} pesci sbagliati all'uomo in nero.` : `Restituì al mare ${sc.buttati} pesci sbagliati, uno per uno.`);
+  if (sc.idoloGettato) parti.push(`Gettò l'idolo in mare ${sc.idoloGettato === 1 ? 'una volta' : sc.idoloGettato + ' volte'}. Tornò sempre.`);
+  if (sc.faro === 'spento') parti.push(`Spense il faro di Ashcombe.`); else if (sc.faro === 'difeso') parti.push(`Difese il faro fino all'ultimo.`);
+  if (S.flags.debitoPagato) parti.push(`Pagò il debito della Compagnia. Non bastò.`);
+  fbSet('annegati/' + pid, { pid, nome: S.nome, scelte: sc, desc: parti.join(' '), ts: Date.now() });
 }
 
 /* =========================================================
@@ -1309,6 +1776,7 @@ function finale() {
    ========================================================= */
 function setHud(on) {
   $('hud').classList.toggle('hidden', !on);
+  $('fsBtn').classList.toggle('hidden', !fsSupported);
   $('joy').classList.toggle('hidden', !isTouch); $('keysHint').classList.toggle('hidden', isTouch);
 }
 let hudT = 0;
@@ -1334,13 +1802,14 @@ function updateHud(dt) {
   if (S.flags.fossaNota && !S.flags.idolo) mk('fossa', '✶', FOSSA.x, FOSSA.z);
   $('compass').innerHTML = html;
   // pulsante azione
+  $('joy').classList.toggle('hidden', !isTouch || mode !== 'sail');
   if (mode === 'sail') {
     const a = currentAction();
     actEl.classList.toggle('hidden', !a.k);
     if (a.k === 'dock') actEl.innerHTML = 'ATTRACCA' + (isTouch ? '' : '<small>spazio</small>');
     else if (a.k === 'fish') actEl.innerHTML = 'PESCA' + (isTouch ? '' : '<small>spazio</small>');
     else if (a.k === 'nofish') actEl.innerHTML = 'PESCA';
-  } else if (mode === 'fish') actEl.classList.remove('hidden');
+  } else if (mode === 'fish') actEl.classList.toggle('hidden', F.phase === 'result');
   else actEl.classList.add('hidden');
 }
 
@@ -1356,11 +1825,12 @@ function updateBoat(dt) {
     turn = clamp((keys.KeyA || keys.ArrowLeft ? 1 : 0) - (keys.KeyD || keys.ArrowRight ? 1 : 0) - joy.x, -1, 1);
     if (Math.abs(joy.y) < .15 && isTouch && Math.abs(joy.x) > .2 && !keys.KeyW) thr = Math.max(thr, .25);
   }
+  if (mode === 'drift') thr = .12;
   const maxV = 13, target = thr >= 0 ? thr * maxV : thr * 4;
   boat.v += (target - boat.v) * (Math.abs(thr) > .05 ? .7 : .4) * dt;
   const steer = turn * (.45 + Math.min(Math.abs(boat.v) / maxV, 1) * .85) * (boat.v < -0.5 ? -1 : 1);
   boat.h += steer * dt;
-  if (mode === 'sail' || mode === 'fish' || mode === 'cut') {
+  if (mode === 'sail' || mode === 'fish' || mode === 'cut' || mode === 'drift') {
     const f = fwdVec(); boat.pos.addScaledVector(f, boat.v * dt);
     if (collide(boat.pos)) { if (Math.abs(boat.v) > 3) SFX.bump(); boat.v *= -.25; shake = Math.max(shake, .25); }
   }
@@ -1482,6 +1952,7 @@ function updateWorld(dt) {
       }
     } else if (e.g.visible) { e.g.scale.y -= dt * 2; if (e.g.scale.y <= 0) e.g.visible = false; }
   });
+  updateSplash(dt);
   // post
   post.uniforms.uTime.value = T; post.uniforms.uCorr.value = C;
 }
@@ -1489,18 +1960,23 @@ function updateStory(dt) {
   if (mode !== 'sail' && mode !== 'fish') return;
   R.edgeT -= dt; R.dronePulse = Math.max(0, R.dronePulse - dt * .05);
   const dPort = Math.hypot(boat.pos.x - DOCK.x, boat.pos.z - DOCK.z);
-  if (!S.flags.idolo && S.giorno < 3) {
+  if (!S.flags.idolo && !(S.capitolo === 1 && S.giorno >= 3)) {
     if (clock >= 1110 && !R.warned1) { R.warned1 = true; toast('Il sole sta calando. Ad Ashcombe nessuno pesca di notte.', 4); SFX.bell(); }
     if (clock >= 1200 && !R.warned2) { R.warned2 = true; toast('È notte. Torna in porto. Segui il faro.', 4); corrPulse = .25; SFX.weird(); }
     if (clock >= 1200) R.dronePulse = Math.max(R.dronePulse, (clock - 1200) / 120 * .2);
     if (clock >= 1320 && mode === 'sail') { lostAtNight(); return; }
   }
-  if (S.giorno === 2 && !R.shadowDone && dPort > 140 && clock > 560 && mode === 'sail') triggerShadow();
+  if ((S.giorno === 2 || S.giorno === 5) && !R.shadowDone && dPort > 140 && clock > 560 && mode === 'sail') triggerShadow();
   if (S.giorno >= 3 && !S.flags.idolo) {
     const dF = Math.hypot(boat.pos.x - FOSSA.x, boat.pos.z - FOSSA.z);
     if (dF < 95 && !R.fossaIn) { R.fossaIn = true; toast(`L'acqua qui è nera come inchiostro.`, 4); SFX.weird(); corrPulse = .3; }
     corr = lerp(corr, dF < 120 ? .34 : .16, 1 - Math.exp(-dt * .5));
     if (dF < 120) R.dronePulse = Math.max(R.dronePulse, .08);
+  }
+  // Capitolo II: il pescato sbagliato parla dalla stiva
+  if (S.capitolo === 2 && cursedInHold().length) {
+    R.whisperT -= dt;
+    if (R.whisperT < 0) { R.whisperT = rand(28, 50); whisper(pick(['Portaci da Lui.', 'Siamo tanti, quaggiù.', '{nome}... {nome}...', 'Non venderci.', 'Fa freddo, nella stiva.', 'Tuo padre è qui con noi.']).replace(/\{nome\}/g, S.nome), 2800); corrPulse = .25; SFX.heart(); }
   }
   if (S.flags.idolo) {
     R.whisperT -= dt;
@@ -1520,7 +1996,7 @@ function frame(now) {
   composer.render();
 }
 addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  camera.aspect = innerWidth / innerHeight; camera.fov = camera.aspect < 1 ? 74 : 60; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
 });
 document.addEventListener('visibilitychange', () => { if (!AU.ctx) return; if (document.hidden) AU.ctx.suspend(); else AU.ctx.resume(); });
@@ -1531,30 +2007,57 @@ document.addEventListener('visibilitychange', () => { if (!AU.ctx) return; if (d
 let saved = null;
 async function showMenu() {
   mode = 'menu'; setHud(false); closePanel(); S = freshState(''); $('fishUI').classList.add('hidden');
-  corr = .12; storm = .9; clock = 1110; scene.fog.density = .0055; R.overcast = .4; rainAmt = .2; DOCK_POS(); monolith.visible = false; idolMesh.visible = false; R.beamOn = true; actEl.classList.remove('cursed');
+  corr = .12; storm = .9; clock = 1110; scene.fog.density = .0055; R.overcast = .4; rainAmt = .2; DOCK_POS(); monolith.visible = false; idolMesh.visible = false; uomoNero.visible = false; R.beamOn = true; actEl.classList.remove('cursed');
   $('menu').classList.remove('hidden');
   saved = await loadGame();
   const nm = saved?.nome || localStorage.getItem('mn_nome') || ''; $('nameIn').value = nm;
-  const bc = $('btnCont');
-  if (saved && saved.capitolo === 1 && saved.giorno) { bc.classList.remove('hidden'); bc.textContent = `Continua — Giorno ${saved.giorno}`; }
-  else if (saved && saved.capitolo >= 2) { bc.classList.add('hidden'); $('btnNew').textContent = 'Rigioca il Capitolo I'; }
-  else bc.classList.add('hidden');
-  $('menuMsg').innerHTML = `«${CFG.messaggio}»` + (saved && saved.capitolo >= 2 ? `<br><br>Hai completato il Capitolo I. Qualcosa ti aspetta nel Capitolo II.` : '');
+  const bc = $('btnCont'), bn = $('btnNew');
+  const cap = saved?.capitolo || 1, playable = !!(saved && CHAP[cap] && CHAP[cap].ultimo);
+  $('menuChap').textContent = `Capitolo ${ROMAN[playable ? cap : 1]} — ${CHAP[playable ? cap : 1].nome}`;
+  if (playable && saved.giorno) { bc.classList.remove('hidden'); bc.textContent = `Continua — Cap. ${ROMAN[cap]}, Giorno ${saved.giorno}`; bn.textContent = 'Nuova partita'; bn.classList.add('sec'); }
+  else { bc.classList.add('hidden'); bn.textContent = saved ? 'Nuova partita' : 'Salpa'; bn.classList.remove('sec'); }
+  let msg = `«${CFG.messaggio}»`;
+  if (saved && cap >= 3) msg += `<br><br>Hai completato il Capitolo II. Il Capitolo III — <i>${CHAP[3].nome}</i> — arriverà presto. La tua partita è salvata.`;
+  $('menuMsg').innerHTML = msg;
+  $('btnFull').classList.toggle('hidden', !fsSupported);
 }
 $('btnNew').addEventListener('click', () => {
   audioInit(); SFX.click();
+  if (saved && saved.capitolo >= 2 && !confirm('Ricominciare dal Capitolo I? I progressi attuali andranno persi.')) return;
+  goFull();
   const nome = ($('nameIn').value || '').trim().slice(0, 18) || 'Pescatore';
   localStorage.setItem('mn_nome', nome);
   S = freshState(nome); fbSet('giocatori/' + pid, null); beginGame();
 });
 $('btnCont').addEventListener('click', () => {
-  audioInit(); SFX.click(); if (!saved) return;
+  audioInit(); SFX.click(); if (!saved) return; goFull();
   S = saved; const nome = ($('nameIn').value || '').trim(); if (nome) S.nome = nome.slice(0, 18);
   beginGame();
 });
 function beginGame() {
   $('menu').classList.add('hidden'); fadeTo(1, () => { fadeTo(0); startDay(); }, 900);
 }
+/* ---------- Schermo intero e orientamento orizzontale ---------- */
+const DE = document.documentElement;
+const fsSupported = !!(DE.requestFullscreen || DE.webkitRequestFullscreen);
+let fsManualExit = false;
+const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function lockLandscape() { try { const p = screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape'); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+function goFull() {
+  if (!fsSupported || isFull()) { lockLandscape(); return; }
+  try {
+    const p = DE.requestFullscreen ? DE.requestFullscreen({ navigationUI: 'hide' }) : DE.webkitRequestFullscreen();
+    if (p && p.then) p.then(lockLandscape).catch(() => {}); else lockLandscape();
+  } catch (e) {}
+}
+function toggleFull() {
+  if (isFull()) { fsManualExit = true; (document.exitFullscreen || document.webkitExitFullscreen).call(document); } else { fsManualExit = false; goFull(); }
+}
+$('btnFull').addEventListener('click', e => { e.stopPropagation(); toggleFull(); });
+$('fsBtn').addEventListener('click', e => { e.stopPropagation(); toggleFull(); });
+$('rotSkip').addEventListener('click', e => { e.stopPropagation(); document.body.classList.add('portraitOk'); });
+// appena il telefono viene girato in orizzontale, prova ad andare a schermo intero al primo tocco
+addEventListener('pointerdown', () => { if (isTouch && !fsManualExit && innerWidth > innerHeight && mode !== 'loading' && !isFull()) goFull(); }, { capture: true });
 function renderList(id, data, fmt) {
   const el = $(id); if (!data) { el.textContent = '—'; return; }
   el.innerHTML = Object.values(data).sort((a, b) => b.ts - a.ts).slice(0, 6).map(fmt).join('');
@@ -1562,7 +2065,11 @@ function renderList(id, data, fmt) {
 function listenGlobal() {
   fbOn('config/messaggio', v => { if (v) { CFG.messaggio = v; if (mode === 'menu') $('menuMsg').innerHTML = `«${v}»`; } });
   fbOnLast('annali', 8, d => renderList('lstAnnali', d, a => `<div>${esc(a.nome)} — ${esc(a.pesce)}${a.giorno ? ` <i>(g.${a.giorno})</i>` : ''}</div>`));
-  fbOnLast('dispersi', 8, d => renderList('lstDispersi', d, a => `<div>${esc(a.nome)}</div>`));
+  fbOnLast('dispersi', 8, d => renderList('lstDispersi', d, a => `<div>${esc(a.nome)}${a.capitolo ? ` <i>(cap. ${ROMAN[a.capitolo] || a.capitolo})</i>` : ''}</div>`));
+  fbOnLast('annegati', 40, d => {
+    ANNEGATI = Object.entries(d || {}).map(([id, v]) => ({ id, ...v })).filter(a => a && a.nome && a.pid !== pid);
+    renderList('lstAnnegati', d, a => `<div>${esc(a.nome)}</div>`);
+  });
   // broadcast dall'admin: scrivi {testo, ts} in /marea_nera/broadcast e tutti i giocatori in mare lo "sentono"
   let lastB = 0;
   fbOn('broadcast', b => { if (!b || !b.testo || !b.ts || b.ts === lastB) return; lastB = b.ts; if (Date.now() - b.ts < 120000 && (mode === 'sail' || mode === 'fish' || mode === 'port')) whisper(b.testo, 4500); });
@@ -1572,6 +2079,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 /* =========================================================
    AVVIO
    ========================================================= */
+// strumenti di prova: apri index.html?debug
+if (location.search.includes('debug')) window.MN = { get S() { return S; }, set S(v) { S = v; }, get mode() { return mode; }, F, boat, SPOTS, FISH, startDay, startFishing, openPort, goHome, finale2, get clock() { return clock; }, set clock(v) { clock = v; } };
 requestAnimationFrame(frame);
 (async () => {
   await fbInit();

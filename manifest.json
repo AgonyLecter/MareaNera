@@ -1,0 +1,11 @@
+{
+  "name": "Marea Nera",
+  "short_name": "Marea Nera",
+  "lang": "it",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#05070a"
+}
