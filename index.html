@@ -1460,7 +1460,11 @@ function cast() {
 }
 function chooseFish() {
   const sp = F.spot; F.nothing = false; F.ann = null;
-  if (sp.fossa) return R.fossaCatches >= 2 ? 'idolo' : 'lanterna';
+  if (sp.fossa) {
+    // "Là il pesce non finisce mai": la Fossa ti dà quello che ti serve per pagare. Poi si prende te.
+    const have = S.soldi + S.stiva.reduce((a, it) => a + itemValue(it), 0);
+    return R.fossaCatches >= 2 && have >= S.debito ? 'idolo' : 'lanterna';
+  }
   // un Annegato: un altro giocatore che ha finito il gioco
   if (ANNEGATI.length && R.catches >= 1 && Math.random() < .03) { F.ann = pick(ANNEGATI); return 'annegato'; }
   if (S.capitolo === 1) {
@@ -1727,7 +1731,7 @@ function startDay(first = false) {
   fossaSpot.active = ch === 1 && d >= 3; fossaSpot.g.visible = fossaSpot.active;
   waterU.uFossaR.value = d >= 3 ? 55 : 0;
   // Capitolo II: il debito "matura"
-  if (ch === 2 && !S.flags.ch2) { S.flags.ch2 = true; S.flags.debitoCh1 = !!S.flags.debitoPagato; S.debito = S.flags.debitoPagato ? 400 : S.debito + 150; delete S.flags.debitoPagato; }
+  if (ch === 2 && !S.flags.ch2) { S.flags.ch2 = true; S.flags.debitoCh1 = !!S.flags.debitoPagato; S.debito = 250; delete S.flags.debitoPagato; }
   saveGame();
   setHud(true);
   const go = () => { mode = 'sail'; SFX.bell(); setHud(true); };
@@ -1827,7 +1831,8 @@ function dockBoat() {
 function openPort() {
   mode = 'port';
   const n = S.stiva.length, ch = S.capitolo, last = lastDay();
-  const canHome = ch !== 1 || S.giorno < 3 || S.flags.idolo;
+  const mustPay = (ch === 1 && S.giorno >= 3) || (ch === 2 && S.giorno >= 6);
+  const canHome = (ch !== 1 || S.giorno < 3 || S.flags.idolo) && !(mustPay && S.debito > 0 && (ch !== 1 || S.flags.idolo));
   const nCur = cursedInHold().length;
   const idolBtn = ch === 2 && S.giorno < 6 && S.flags.idoloGettato !== S.giorno;
   panel(`
@@ -1845,11 +1850,18 @@ function openPort() {
       <button class="pbtn" id="pHome"><span>Torna a casa</span><span class="r">${S.giorno < last ? 'fine giornata' : (ch === 1 ? (S.flags.idolo ? 'la notte' : '—') : 'la notte')}</span></button>
       <button class="pbtn main" id="pSail" ${S.flags.idolo ? 'disabled' : ''}>Salpa</button>
     </div>
-    ${!canHome ? '<div class="note">Non puoi tornare a casa a mani vuote. Non stasera.</div>' : ''}`);
+    ${!canHome ? `<div class="note">${mustPay && S.debito > 0 && (ch === 2 || S.flags.idolo) ? `Prima di andare a casa devi pagare la Compagnia: mancano ${S.debito} monete.` : 'Non puoi tornare a casa a mani vuote. Non stasera.'}</div>` : ''}`);
   bind('pSell', openSell); bind('pShop', openShop); bind('pDebt', payDebt); bind('pTalk', talkJonah); bind('pBook', openBook);
   bind('pNero', openNero); bind('pDump', dumpCursed); bind('pIdol', throwIdol);
   bind('pHome', () => {
-    if (!canHome) { closePanel(); say([['TU', `Se torno a casa adesso, stasera la Compagnia si prende la Margaret.`], ['TU', `E poi... qualcosa mi trattiene. Il mare mi sta aspettando.`]], openPort); return; }
+    if (!canHome) {
+      closePanel();
+      if (mustPay && S.debito > 0 && (ch === 2 || S.flags.idolo)) say(ch === 1
+        ? [['ABEL', `Gli uomini della Compagnia sono già qui, {nome}. Aspettano davanti a casa tua.`], ['ABEL', `Ne vogliono ancora ${S.debito}. Vendi quello che hai e paga. Poi chiuditi dentro.`]]
+        : [['UOMO IN NERO', `Non così in fretta, {nome}. Mancano ${S.debito} monete.`], ['UOMO IN NERO', `La Compagnia non lascia andare a dormire nessuno con un conto aperto.`]], openPort);
+      else say([['TU', `Se torno a casa adesso, stasera la Compagnia si prende la Margaret.`], ['TU', `E poi... qualcosa mi trattiene. Il mare mi sta aspettando.`]], openPort);
+      return;
+    }
     if (!(ch === 1 && S.flags.idolo) && objLeft().length) { confirmHome(); return; }
     goHome();
   });
@@ -2014,7 +2026,7 @@ function goHome() {
   } else if (S.capitolo === 1) finale(); else finale2();
 }
 function lostAtNight() {
-  if (S.capitolo === 2 && S.giorno >= 6) { finale2(); return; }
+  if (S.capitolo === 2 && S.giorno >= 6 && S.debito <= 0) { finale2(); return; }
   mode = 'cut'; S.stiva = [];
   showCard([{ t: 'Il buio ti ha inghiottito.', c: 'sub' }, 'Ricordi solo la luce del faro, lontana, sempre più lontana.', 'E una voce, sotto la chiglia, che contava le tue assi.', { t: 'Ti svegli all\'alba, sul molo. Bagnato. La stiva è vuota.', c: 'sub' }], () => {
     S.giorno = Math.min(lastDay(), S.giorno + 1); saveGame(); startDay();
@@ -2164,8 +2176,13 @@ function objectives() {
   else if (ch === 2 && d === 5) o.push(jonah('Jonah è tornato: parlagli, al porto'), fish(4), far, dec('Decidi del pescato sbagliato'));
   else if (ch === 2 && d === 6) o.push(fish(3), jonah('Parla con Jonah un\'ultima volta'), dec('L\'ultima scelta: vendi o restituisci il pescato sbagliato'));
   if (ch === 2 && d < 6 && S.flags.idoloGettato !== d) o.push({ id: 'idolo', t: 'Puoi provare a gettare l\'idolo dal molo', done: false, opt: true, mark: null });
-  // il debito è parte del racconto, non un compito: lo si ricorda solo nel Capitolo I, quando ha una scadenza
-  if (S.debito > 0 && ch === 1) o.push({ id: 'debt', t: d < 3 ? `La Compagnia Marrow vuole ${S.debito} monete entro il Giorno III` : `Stasera arriva la Compagnia Marrow`, done: false, opt: true, mark: null });
+  // il debito è il cancello della storia: va saldato per chiudere il capitolo (Giorno III e Giorno VI)
+  const last = (ch === 1 && d === 3) || (ch === 2 && d === 6);
+  if (ch <= 2 && (S.debito > 0 || last)) {
+    const after = ch === 1 ? !!S.flags.idolo : true;
+    if (last && after) o.push({ id: 'debt', t: ch === 1 ? 'Paga la Compagnia Marrow, al porto' : 'Salda la seconda rata alla Compagnia', b: S.debito > 0 ? `${Math.min(S.soldi, S.debito)}/${S.debito}` : '', done: S.debito <= 0, mark: 'port' });
+    else if (S.debito > 0) o.push({ id: 'debtS', t: ch === 1 ? `Metti da parte ${S.debito} monete per la Compagnia, entro il Giorno III` : `Metti da parte ${S.debito} monete per la Compagnia, entro il Giorno VI`, b: `${Math.min(S.soldi, S.debito)}/${S.debito}`, done: false, opt: true, mark: null });
+  }
   const main = o.filter(x => !x.opt);
   const allDone = main.every(x => x.done);
   if (allDone) o.splice(main.length, 0, { id: 'home', t: ch === 1 && d === 3 ? 'Vai a casa. Chiudi la porta a chiave.' : ch === 2 && d === 6 ? 'Vai a casa. Stanotte la Margaret ti porterà via.' : 'Torna al porto e vai a casa', done: false, mark: 'port' });
