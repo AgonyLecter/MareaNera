@@ -52,14 +52,27 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 .hold i.x{background:var(--bile);border-color:#c8ffd8;box-shadow:0 0 6px #3f9;animation:beat 1.2s infinite}
 #compass{position:absolute;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(44vw,400px);height:42px;overflow:hidden;
   background:linear-gradient(90deg,transparent,#0b0907dd 14%,#0b0907dd 86%,transparent);border-top:1px solid #b08d5777;border-bottom:1px solid #b08d5777;
-  -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+}
 #compass:before{content:'';position:absolute;left:50%;top:-1px;margin-left:-6px;border:6px solid transparent;border-top:7px solid var(--brass2);z-index:2}
 #compass:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:#b08d5755}
-.cmk{position:absolute;top:5px;transform:translateX(-50%);font-size:14px;text-align:center;white-space:nowrap;text-shadow:var(--sh);line-height:1.1}
+.cmk{position:absolute;left:0;top:5px;width:64px;margin-left:-32px;will-change:transform,opacity;font-size:14px;text-align:center;white-space:nowrap;text-shadow:var(--sh);line-height:1.1}
 .cmk small{display:block;font-size:10px;opacity:.75;font-style:italic}
 .cmk.card{color:#8c826f;top:13px;font-family:'IM Fell English SC';letter-spacing:2px}
 .cmk.port{color:var(--brass2)}
 .cmk.fossa{color:var(--bile);text-shadow:0 0 8px #2f8,0 0 3px #000}
+.cmk.port{opacity:.75}.cmk.port.tgt{opacity:1}
+.cmk.spot{color:#d8ecf2;text-shadow:0 0 6px #9fd0e0,0 0 3px #000}
+.cmk.tgt .s{animation:blink 1.6s infinite}
+.cmk[data-edge=l] .s:before{content:'◂ '}.cmk[data-edge=r] .s:after{content:' ▸'}
+.obj{margin-top:7px;padding-top:5px;border-top:1px solid #b08d5744;max-width:290px}
+.obj .o{font-size:14px;line-height:1.3;color:var(--bone);padding-left:16px;position:relative;margin-top:2px}
+.obj .o:before{content:'';position:absolute;left:2px;top:6px;width:6px;height:6px;border:1px solid var(--brass2);transform:rotate(45deg)}
+.obj .o.now:before{background:var(--brass2);box-shadow:0 0 6px #e6c992}
+.obj .o.done{color:var(--dim);text-decoration:line-through;text-decoration-color:#776e5e88}
+.obj .o.done:before{border-color:var(--dim);background:var(--dim)}
+.obj .o.opt{color:var(--bone2);font-style:italic;font-size:13px}
+.obj .o.urg{color:#ffb48a}.obj .o.urg:before{border-color:var(--blood);background:var(--blood)}
+.obj .o b{font-weight:normal;color:var(--brass2);margin-left:4px}
 #hudTR{position:absolute;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));pointer-events:auto;display:flex;gap:8px}
 .icoBtn{width:42px;height:42px;border-radius:50%;font-size:16px;color:var(--brass2);
   background:radial-gradient(circle at 35% 30%,#2a2116,#0b0907 70%);border:1px solid var(--brass);box-shadow:inset 0 0 0 3px #0b0907,inset 0 0 0 4px #3d7a6055,0 3px 10px #000a}
@@ -287,7 +300,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 @media (orientation:portrait){#fishHint{bottom:calc(260px + env(safe-area-inset-bottom))}#reelWrap{bottom:calc(150px + env(safe-area-inset-bottom));width:min(88vw,480px)}#powerWrap{bottom:calc(170px + env(safe-area-inset-bottom));width:70vw}}
 /* Orizzontale su telefono: schermi bassi */
 @media (max-height:520px){
-  #hudTL{padding:5px 12px 6px;min-width:0}.hDay{font-size:15px}.hDay span{font-size:13px}.hMon{font-size:13px}.hold{margin-top:4px}.hold i{width:9px;height:9px}
+  #hudTL{padding:5px 12px 6px;min-width:0}.obj{margin-top:4px;padding-top:3px;max-width:250px}.obj .o{font-size:12px;margin-top:1px}.obj .o.opt{font-size:11px}.obj .o:before{top:5px;width:5px;height:5px}.hDay{font-size:15px}.hDay span{font-size:13px}.hMon{font-size:13px}.hold{margin-top:4px}.hold i{width:9px;height:9px}
   #compass{height:34px;width:min(38vw,340px)}.cmk{font-size:12px;top:2px}.cmk.card{top:9px}.cmk small{font-size:9px}
   .icoBtn{width:36px;height:36px;font-size:14px}.icoBtn svg{width:17px;height:17px}
   #joy{width:112px;height:112px;left:calc(14px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom))}#knob{width:48px;height:48px;margin:-24px 0 0 -24px}#knob:after{inset:16px}
@@ -1664,7 +1677,7 @@ function caught() {
     afterCatch();
   };
   bind('cKeep', () => { S.stiva.push(it); after(); });
-  bind('cThrow', () => { SFX.splash(); if (f.cursed || k === 'annegato') { S.scelte.buttati++; setTimeout(() => whisper(pick(['Grazie.', 'Ti ricorderemo.', 'Non è ancora finita.']), 2200), 600); } after(); });
+  bind('cThrow', () => { SFX.splash(); if (f.cursed || k === 'annegato') { S.scelte.buttati++; R.decisi = (R.decisi || 0) + 1; setTimeout(() => whisper(pick(['Grazie.', 'Ti ricorderemo.', 'Non è ancora finita.']), 2200), 600); } after(); });
   bind('cOpen', () => { closePanel(); S.flags.bottiglia = true; readBottle(); });
 }
 function afterCatch() {
@@ -1837,13 +1850,14 @@ function openPort() {
   bind('pNero', openNero); bind('pDump', dumpCursed); bind('pIdol', throwIdol);
   bind('pHome', () => {
     if (!canHome) { closePanel(); say([['TU', `Se torno a casa adesso, stasera la Compagnia si prende la Margaret.`], ['TU', `E poi... qualcosa mi trattiene. Il mare mi sta aspettando.`]], openPort); return; }
-    if (!(ch === 1 && S.flags.idolo) && clock < 900 && !isNight()) { closePanel(); say([['ABEL', `Già a casa? È ancora presto, il sole è alto.`]], () => confirmHome()); return; }
+    if (!(ch === 1 && S.flags.idolo) && objLeft().length) { confirmHome(); return; }
     goHome();
   });
   bind('pSail', () => { closePanel(); mode = 'sail'; });
 }
 function confirmHome() {
-  panel(`<h2>Chiudere la giornata?</h2><div class="subt">Il pesce non venduto marcirà nella stiva.</div><div class="btns"><button class="pbtn main" id="hY">Sì, vado a casa</button><button class="pbtn" id="hN">No, resto</button></div>`);
+  const left = objLeft();
+  panel(`<h2>Chiudere la giornata?</h2><div class="subt">${left.length ? 'Oggi hai ancora qualcosa da fare:' : 'Il pesce non venduto marcirà nella stiva.'}</div>${left.map(x => `<div class="row bad"><span>${x.t}</span><span class="r">${x.b || ''}</span></div>`).join('')}${left.length ? '<div class="note">Il pesce non venduto marcirà nella stiva.</div>' : ''}<div class="btns"><button class="pbtn main" id="hN">Resto ancora</button><button class="pbtn" id="hY">Vado a casa lo stesso</button></div>`);
   bind('hY', goHome); bind('hN', openPort);
 }
 function groupRows(items, buyer) {
@@ -1865,7 +1879,7 @@ function openSell() {
   bind('sBack', openPort);
   bind('sAll', () => {
     const had = {}; ok.forEach(it => had[it.k] = 1); no.forEach(it => had[it.k] = 1);
-    S.soldi += tot; S.stats.venduti += ok.length; S.stats.guadagno += tot;
+    S.soldi += tot; S.stats.venduti += ok.length; S.stats.guadagno += tot; if (tot) R.sold = true;
     S.stiva = no.filter(it => it.k !== 'denti'); if (tot) SFX.coin(); saveGame();
     const lines = [];
     if (had.denti) lines.push(['ABEL', `Questa no. Buttala in mare, {nome}. E non dire a nessuno dove l'hai presa.`]);
@@ -1877,7 +1891,7 @@ function openSell() {
   });
 }
 function openNero() {
-  const cur = cursedInHold(); const { g, tot } = groupRows(cur, 'nero');
+  R.neroVisto = true; const cur = cursedInHold(); const { g, tot } = groupRows(cur, 'nero');
   let rows = '';
   for (const key in g) { const { it, n, v } = g[key]; rows += `<div class="row"><span>${fishSVG(it.k)}${fishName(it)} × ${n}</span><span class="r">${v} m.</span></div>`; }
   if (!rows) rows = `<div class="note">«Non ha niente per me, oggi? Peccato. La Compagnia è paziente.»</div>`;
@@ -1887,7 +1901,7 @@ function openNero() {
     <div class="note">Quello che vendi a lui, e quello che restituisci al mare, verrà ricordato.</div>`);
   bind('nBack', openPort);
   bind('nSell', () => {
-    S.soldi += tot; S.stats.guadagno += tot; S.scelte.nero += cur.length; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.coin(); saveGame();
+    S.soldi += tot; S.stats.guadagno += tot; S.scelte.nero += cur.length; R.decisi = (R.decisi || 0) + 1; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.coin(); saveGame();
     closePanel(); toast(`+${tot} monete`); corrPulse = .3;
     const first = !S.flags.primaVenditaNero; S.flags.primaVenditaNero = true;
     say(first ? [['UOMO IN NERO', `Eccellente. Vede? Non era difficile.`], ['TU', `(Infila i pesci in un sacco di tela. Il sacco si muove. Lui non sembra notarlo.)`]]
@@ -1896,7 +1910,7 @@ function openNero() {
 }
 function dumpCursed() {
   const cur = cursedInHold(); if (!cur.length) return openPort();
-  closePanel(); S.scelte.buttati += cur.length; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.splash(); saveGame();
+  closePanel(); S.scelte.buttati += cur.length; R.decisi = (R.decisi || 0) + 1; S.stiva = S.stiva.filter(it => !cur.includes(it)); SFX.splash(); saveGame();
   setTimeout(() => whisper(pick(['Grazie, {nome}.', 'Ce ne ricorderemo.', 'Non basterà. Ma grazie.']).replace('{nome}', S.nome), 2600), 700);
   say([['TU', `Li faccio scivolare in acqua dal molo, uno alla volta.`], ['TU', `Non affondano subito. Restano a galla un momento, a guardarmi. Poi scendono.`]], openPort);
 }
@@ -1947,7 +1961,7 @@ function openHold() {
       ${cur ? `<div class="row bad"><span>Abel</span><span class="r">non lo toccherà</span></div>${S.capitolo >= 2 ? `<div class="row"><span>L'uomo in nero</span><span class="r">${itemValue(it, 'nero')} monete</span></div>` : ''}` : f.p ? `<div class="row"><span>Valore da Abel</span><span class="r">${itemValue(it)} monete</span></div>` : ''}
       <div class="btns"><button class="pbtn" id="hThrow"><span>${cur ? 'Restituiscilo al mare' : 'Ributtalo in mare'}</span><span class="r">per sempre</span></button><button class="pbtn main" id="hB">Indietro</button></div>`, 'catch' + (cur ? ' cursedP' : ''));
     bind('hB', openHold);
-    bind('hThrow', () => { S.stiva.splice(S.stiva.indexOf(it), 1); SFX.splash(); if (cur) { S.scelte.buttati++; setTimeout(() => whisper(pick(['Grazie.', 'Ti ricorderemo.', 'Non è ancora finita.']), 2200), 500); } saveGame(); openHold(); });
+    bind('hThrow', () => { S.stiva.splice(S.stiva.indexOf(it), 1); SFX.splash(); if (cur) { S.scelte.buttati++; R.decisi = (R.decisi || 0) + 1; setTimeout(() => whisper(pick(['Grazie.', 'Ti ricorderemo.', 'Non è ancora finita.']), 2200), 500); } saveGame(); openHold(); });
   });
   bind('hBook', openBook); bind('hBack', backTo);
 }
@@ -1977,6 +1991,7 @@ function payDebt() {
 }
 function talkJonah() {
   closePanel();
+  if (jonah.visible) R.jonahTalk = true;
   if (!jonah.visible) { say([['TU', `La lanterna è calda. Sulle assi del molo, impronte bagnate. Vanno verso l'acqua.`], ['TU', `Non tornano indietro.`]], openPort); return; }
   const L = {
     1: [[`JONAH`, `Vedi quel faro? L'hanno costruito i miei nonni. Dicono per le navi.`], ['JONAH', `Io dico che l'hanno costruito per tenere qualcosa lontano dalla riva.`]],
@@ -2131,28 +2146,97 @@ function setHud(on) {
 }
 let hudT = 0, lastHud = '', lastC = '';
 const CARDS = [['N', 0, 1], ['E', -1, 0], ['S', 0, -1], ['O', 1, 0], ['NE', -.7, .7], ['SE', -.7, -.7], ['SO', .7, -.7], ['NO', .7, .7]];
+/* ---------- Obiettivi del giorno ---------- */
+function objectives() {
+  const d = S.giorno, ch = S.capitolo, c = R.catches, o = [];
+  const fish = n => ({ id: 'fish' + n, t: `Pesca ${n} pesci`, b: `${Math.min(c, n)}/${n}`, done: c >= n, mark: 'spot' });
+  const sell = { id: 'sell', t: 'Vendi il pescato al banco di Abel', done: !!R.sold, mark: 'port' };
+  const far = { id: 'far', t: 'Spingiti al largo, oltre 150 m dal porto', done: !!R.far, mark: null };
+  const dec = t => ({ id: 'dec', t, done: R.decisi > 0, mark: null });
+  const jonah = t => ({ id: 'jonah', t, done: !!R.jonahTalk, mark: 'port' });
+  if (ch === 1 && d === 1) o.push(fish(4), sell);
+  else if (ch === 1 && d === 2) o.push(fish(5), far, sell, jonah('Parla con Jonah, in fondo al molo'));
+  else if (ch === 1 && d === 3) o.push(
+    { id: 'fossa', t: 'Raggiungi la Fossa, oltre lo Scoglio Nero', done: !!(R.fossaIn || S.flags.idolo), mark: 'fossa' },
+    { id: 'idol', t: 'Pesca alla Fossa', done: !!S.flags.idolo, mark: 'fossa' },
+    { id: 'back', t: 'Torna al porto. Subito.', done: !!R.abelPost, mark: 'port' });
+  else if (ch === 2 && d === 4) o.push(fish(5), { id: 'nero', t: 'Parla con l\'uomo in nero, al porto', done: !!R.neroVisto, mark: 'port' }, dec('Decidi del pescato sbagliato: vendilo a lui o restituiscilo al mare'));
+  else if (ch === 2 && d === 5) o.push(jonah('Jonah è tornato: parlagli, al porto'), fish(6), far, dec('Decidi del pescato sbagliato'));
+  else if (ch === 2 && d === 6) o.push(fish(4), jonah('Parla con Jonah un\'ultima volta'), dec('L\'ultima scelta: vendi o restituisci il pescato sbagliato'));
+  if (ch === 2 && d < 6 && S.flags.idoloGettato !== d) o.push({ id: 'idolo', t: 'Puoi provare a gettare l\'idolo dal molo', done: false, opt: true, mark: null });
+  if (S.debito > 0 && ch <= 2) o.push({ id: 'debt', t: ch === 1 ? `Debito: ${S.debito} monete da pagare entro il Giorno III` : `Debito con la Compagnia: ${S.debito} monete`, done: false, opt: true, mark: null });
+  const main = o.filter(x => !x.opt);
+  const allDone = main.every(x => x.done);
+  if (allDone) o.splice(main.length, 0, { id: 'home', t: ch === 1 && d === 3 ? 'Vai a casa. Chiudi la porta a chiave.' : ch === 2 && d === 6 ? 'Vai a casa. Stanotte la Margaret ti porterà via.' : 'Torna al porto e vai a casa', done: false, mark: 'port' });
+  else if (!S.flags.idolo && !(ch === 1 && d === 3) && clock >= 1110) o.unshift({ id: 'late', t: 'Si fa buio: rientra in porto', done: false, mark: 'port', urg: true });
+  return o;
+}
+const objLeft = () => objectives().filter(x => !x.opt && !x.done && x.id !== 'home' && x.id !== 'late');
+function objHTML(list) {
+  let first = true;
+  return '<div class="obj">' + list.map(x => {
+    const now = !x.done && !x.opt && first; if (now) first = false;
+    return `<div class="o${x.done ? ' done' : ''}${x.opt ? ' opt' : ''}${now ? ' now' : ''}${x.urg ? ' urg' : ''}">${x.t}${x.b && !x.done ? `<b>${x.b}</b>` : ''}</div>`;
+  }).join('') + '</div>';
+}
+/* ---------- Bussola: elementi creati una volta, poi solo spostati ---------- */
+const CMP = { el: $('compass'), cards: [], mk: {}, W: 0, tgt: null, cf: new THREE.Vector3() };
+for (const [l] of CARDS) { const e = document.createElement('div'); e.className = 'cmk card'; e.textContent = l; CMP.el.appendChild(e); CMP.cards.push(e); }
+for (const k of ['port', 'tgt']) { const e = document.createElement('div'); e.className = 'cmk ' + k; e.innerHTML = '<span class="s"></span><small></small>'; CMP.el.appendChild(e); CMP.mk[k] = { e, s: e.firstChild, d: e.lastChild, ld: -1, ls: '', lc: '' }; }
+CMP.mk.port.s.textContent = '⚓';
+function updateCompass() {
+  const W = CMP.W || (CMP.W = CMP.el.clientWidth); if (!W) return;
+  const cf = CMP.cf; camera.getWorldDirection(cf); cf.y = 0; cf.normalize();
+  const rx = -cf.z, rz = cf.x;
+  const ang = (dx, dz) => Math.atan2(dx * rx + dz * rz, dx * cf.x + dz * cf.z);
+  CARDS.forEach(([, x, z], i) => {
+    const a = ang(x, z), e = CMP.cards[i];
+    if (Math.abs(a) < Math.PI / 2) { const px = W / 2 + a / (Math.PI / 2) * W * .5; e.style.transform = `translate3d(${px.toFixed(1)}px,0,0)`; e.style.opacity = (1 - Math.pow(Math.abs(a) / (Math.PI / 2), 3)).toFixed(2); }
+    else e.style.opacity = 0;
+  });
+  const place = (m, tx, tz, show) => {
+    if (!show) { if (m.e.style.opacity !== '0') m.e.style.opacity = 0; return; }
+    const dx = tx - boat.pos.x, dz = tz - boat.pos.z, a = ang(dx, dz);
+    const px = clamp(W / 2 + a / (Math.PI / 2) * W * .5, 26, W - 26);
+    const edge = Math.abs(a) > Math.PI / 2 * .95 ? (a > 0 ? 'r' : 'l') : ''; if (m.e.dataset.edge !== edge) m.e.dataset.edge = edge;
+    m.e.style.transform = `translate3d(${px.toFixed(1)}px,0,0)`; m.e.style.opacity = '';
+    const dist = Math.round(Math.hypot(dx, dz) / 5) * 5; if (dist !== m.ld) { m.ld = dist; m.d.textContent = dist + 'm'; }
+  };
+  const t = CMP.tgt;
+  place(CMP.mk.port, DOCK.x, DOCK.z, true);
+  CMP.mk.port.e.classList.toggle('tgt', !!(t && t.k === 'port'));
+  const m = CMP.mk.tgt;
+  if (t && t.k !== 'port') {
+    const sym = t.k === 'fossa' ? '✶' : '◎', cls = 'cmk tgt ' + (t.k === 'fossa' ? 'fossa' : 'spot');
+    if (m.ls !== sym) { m.ls = sym; m.s.textContent = sym; } if (m.lc !== cls) { m.lc = cls; m.e.className = cls; }
+    place(m, t.x, t.z, true);
+  } else place(m, 0, 0, false);
+}
+function updateObjTarget(list) {
+  const cur = list.find(x => !x.done && !x.opt && x.mark);
+  if (!cur) { CMP.tgt = null; return; }
+  if (cur.mark === 'port') CMP.tgt = { k: 'port' };
+  else if (cur.mark === 'fossa') CMP.tgt = { k: 'fossa', x: FOSSA.x, z: FOSSA.z };
+  else if (cur.mark === 'spot') {
+    let best = null, bd = 1e9;
+    for (const sp of SPOTS) { if (sp.fossa || !sp.active || !sp.g.visible) continue; const dd = Math.hypot(sp.x - boat.pos.x, sp.z - boat.pos.z); if (dd < bd) { bd = dd; best = sp; } }
+    CMP.tgt = best ? { k: 'spot', x: best.x, z: best.z } : null;
+  }
+}
 function updateHud(dt) {
+  if (mode === 'sail' || mode === 'fish' || mode === 'port') updateCompass();
   hudT -= dt; if (hudT > 0) return; hudT = .15;
   const tl = $('hudTL');
   let slots = ''; for (let i = 0; i < capacity(); i++) { const it = S.stiva[i]; slots += `<i class="${it ? (FISH[it.k].cursed || it.k === 'annegato' ? 'x' : 'f') : ''}"></i>`; }
+  const objs = objectives(), showObj = mode === 'sail' || mode === 'fish' || mode === 'port';
+  if (!R.objSeen) R.objSeen = {};
+  for (const x of objs) if (x.done && !R.objSeen[x.id]) { R.objSeen[x.id] = 1; if (R.objReady) { setTimeout(() => { pop('Obiettivo compiuto'); SFX.perfect(); }, 300); } }
+  R.objReady = true;
+  updateObjTarget(objs);
   const hh = `<div class="hDay">Giorno <b>${ROMAN_N(S.giorno)}</b><span class="${isNight() ? 'n' : ''}">${fmtClock()}</span></div>
-    <div class="hMon"><b>${S.soldi}</b> monete · <i class="${S.debito > 0 ? '' : 'ok'}">${S.debito > 0 ? 'debito ' + S.debito : 'debito saldato'}</i></div><div class="hold">${slots}</div>`;
+    <div class="hMon"><b>${S.soldi}</b> monete · <i class="${S.debito > 0 ? '' : 'ok'}">${S.debito > 0 ? 'debito ' + S.debito : 'debito saldato'}</i></div><div class="hold">${slots}</div>` + (showObj ? objHTML(objs) : '');
   if (hh !== lastHud) { tl.innerHTML = hh; lastHud = hh; }
   const cv = (Math.round(clamp(corr + corrPulse, 0, 1) * 20) / 20).toFixed(2); if (cv !== lastC) { document.documentElement.style.setProperty('--c', cv); lastC = cv; }
-  // bussola
-  const cf = new THREE.Vector3(); camera.getWorldDirection(cf); cf.y = 0; cf.normalize();
-  const rx = -cf.z, rz = cf.x; const W = $('compass').clientWidth;
-  const place = (dx, dz) => { const a = Math.atan2(dx * rx + dz * rz, dx * cf.x + dz * cf.z); return { a, x: W / 2 + a / (Math.PI / 2) * W * .5 }; };
-  let html = '';
-  for (const [l, x, z] of CARDS) { const p = place(x, z); if (Math.abs(p.a) < Math.PI / 2) html += `<div class="cmk card" style="left:${p.x}px">${l}</div>`; }
-  const mk = (cls, sym, tx, tz) => {
-    const dx = tx - boat.pos.x, dz = tz - boat.pos.z, dist = Math.hypot(dx, dz); const p = place(dx, dz);
-    const x = clamp(p.x, 14, W - 14); const edge = Math.abs(p.a) >= Math.PI / 2 * .97;
-    html += `<div class="cmk ${cls}" style="left:${x}px">${edge ? (p.a > 0 ? '▸' : '◂') : ''}${sym}<small>${Math.round(dist)}m</small></div>`;
-  };
-  mk('port', '⚓', DOCK.x, DOCK.z);
-  if (S.flags.fossaNota && !S.flags.idolo) mk('fossa', '✶', FOSSA.x, FOSSA.z);
-  $('compass').innerHTML = html;
   // pulsante azione
   $('joy').classList.toggle('hidden', !isTouch || mode !== 'sail');
   if (mode === 'sail') {
@@ -2318,6 +2402,7 @@ function updateStory(dt) {
     if (clock >= 1200) R.dronePulse = Math.max(R.dronePulse, (clock - 1200) / 120 * .2);
     if (clock >= 1320 && mode === 'sail') { lostAtNight(); return; }
   }
+  if (dPort > 150) R.far = true;
   if ((S.giorno === 2 || S.giorno === 5) && !R.shadowDone && dPort > 140 && clock > 560 && mode === 'sail') triggerShadow();
   if (S.giorno >= 3 && !S.flags.idolo) {
     const dF = Math.hypot(boat.pos.x - FOSSA.x, boat.pos.z - FOSSA.z);
@@ -2364,6 +2449,7 @@ function frame(now) {
   adaptRes(dt, draw);
 }
 addEventListener('resize', () => {
+  CMP.W = 0;
   camera.aspect = innerWidth / innerHeight; camera.fov = camera.aspect < 1 ? 74 : 60; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
 });
