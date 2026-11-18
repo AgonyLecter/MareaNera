@@ -25,18 +25,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;color:var(--bon
 #c{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hidden{display:none!important}
 button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inherit}
-.eld{filter:url(#eld)}
+@keyframes wob{0%,100%{transform:none}25%{transform:skewX(-3deg) translateX(1px)}50%{transform:skewX(2deg) scaleY(1.03)}75%{transform:skewX(-1deg) translateX(-1px)}}
 
 /* ---------- Cornici: pergamena annerita, ottone, tentacoli agli angoli ---------- */
-.frame{position:relative;background-image:var(--noise),var(--stain),radial-gradient(ellipse at 50% -10%,#211b13 0%,#100d09 55%,#070605 100%);
-  border:1px solid #4d3b25;box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 0 5px #3a2c1b,inset 0 0 70px #000,inset 0 0 calc(var(--c) * 120px) rgba(70,210,140,calc(var(--c) * .35)),0 24px 70px #000e}
+.frame{position:relative;background-image:radial-gradient(ellipse at 50% 50%,transparent 45%,#000a 100%),var(--noise),var(--stain),radial-gradient(ellipse at 50% -10%,#211b13 0%,#100d09 55%,#070605 100%);
+  border:1px solid #4d3b25;box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 0 5px #3a2c1b,0 12px 30px #000c}
+.frame:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 40%,#2fb87a55 100%);opacity:var(--c)}
 .crn{position:absolute;width:58px;height:58px;background:var(--crn) no-repeat center/contain;pointer-events:none;z-index:2;opacity:.9;filter:drop-shadow(0 0 3px #000)}
 .crn.tl{left:-3px;top:-3px}.crn.tr{right:-3px;top:-3px;transform:scaleX(-1)}.crn.bl{left:-3px;bottom:-3px;transform:scaleY(-1)}.crn.br{right:-3px;bottom:-3px;transform:scale(-1)}
 .orn{height:18px;margin:4px auto 8px;width:min(100%,320px);background:var(--orn) no-repeat center/contain;opacity:.85}
 
 /* ---------- HUD ---------- */
 #hud{position:fixed;inset:0;pointer-events:none;z-index:5;transition:opacity .6s}
-#hudTL{position:absolute;top:calc(10px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));pointer-events:auto;cursor:pointer;
+#hudTL{contain:layout paint;position:absolute;top:calc(10px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));pointer-events:auto;cursor:pointer;
   padding:8px 14px 9px 14px;min-width:190px;background:linear-gradient(90deg,#0b0907e6,#0b090799 80%,transparent);border-left:2px solid var(--brass);text-shadow:var(--sh)}
 #hudTL:before{content:'';position:absolute;left:-2px;top:-6px;width:12px;height:12px;border:1px solid var(--brass);transform:rotate(45deg);background:#0b0907}
 .hDay{font-family:'IM Fell English SC';font-size:19px;letter-spacing:2px;color:var(--bone)}
@@ -95,12 +96,12 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:20;transition:opacity 1.2s}
 
 /* ---------- Dialoghi: ritratto inciso + registro ---------- */
-#dlg{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94vw,780px);z-index:12;pointer-events:auto;
+#dlg{will-change:transform;contain:layout;position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94vw,780px);z-index:12;pointer-events:auto;
   display:flex;gap:16px;align-items:flex-start;padding:16px 22px 22px 16px;animation:rise .35s ease-out}
 @keyframes rise{from{opacity:0;transform:translate(-50%,14px)}}
 #dlgPort{flex:0 0 92px;height:112px;border-radius:50% / 46%;overflow:hidden;border:2px solid var(--brass);background:radial-gradient(ellipse at 50% 40%,#2a2318,#080706 75%);
   box-shadow:0 0 0 4px #0b0907,0 0 0 5px #5a4630,inset 0 0 22px #000,0 6px 16px #000}
-#dlgPort svg{width:100%;height:100%;display:block}
+#dlgPort img{width:100%;height:100%;display:block}
 #dlgPort.none{display:none}
 #dlgBody{flex:1;min-width:0}
 #dlgWho{font-family:'IM Fell English SC';color:var(--brass2);font-size:15px;letter-spacing:4px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
@@ -122,7 +123,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #cardFog{position:absolute;inset:-10%;pointer-events:none;background:radial-gradient(ellipse at 20% 80%,#1d3a2c33,transparent 50%),radial-gradient(ellipse at 80% 20%,#1d2a3a33,transparent 50%);animation:fog 18s ease-in-out infinite alternate}
 @keyframes fog{to{transform:translate(4%,-3%) scale(1.08)}}
 #cardBody{position:relative;z-index:1}
-#card .ln{font-size:clamp(18px,3.4vw,27px);line-height:1.5;margin:7px 0;opacity:0;filter:blur(10px);transform:translateY(8px);transition:opacity 1.6s,filter 2s,transform 2s;max-width:760px;text-shadow:0 0 12px #000}
+#card .ln{font-size:clamp(18px,3.4vw,27px);line-height:1.5;margin:7px 0;opacity:0;filter:blur(4px);transform:translateY(8px);transition:opacity 1.6s,filter 1.6s,transform 2s;max-width:760px;text-shadow:0 0 12px #000}
 #card .ln.on{opacity:1;filter:blur(0);transform:none}
 #card .ttl{font-family:'IM Fell English SC';font-size:clamp(30px,6.5vw,62px);letter-spacing:10px;color:var(--bone);text-shadow:0 0 30px #3d7a6088,0 0 3px #000}
 #card .ttl.on{animation:breathe 6s ease-in-out infinite}
@@ -130,12 +131,12 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #card .ttl:after{content:'';display:block;height:18px;margin:6px auto 0;width:min(70vw,340px);background:var(--orn) no-repeat center/contain;opacity:.8}
 #card .sub{font-style:italic;color:var(--bone2)}
 #card .grn{color:var(--bile);font-style:italic;text-shadow:0 0 18px #2f8a5a,0 0 3px #000}
-#card .grn.on{filter:url(#eld)}
+#card .grn.on{animation:wob 3.4s ease-in-out infinite}
 #cardCont{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom));font-size:13px;opacity:0;transition:opacity 1s;letter-spacing:4px;font-family:'IM Fell English SC';color:var(--brass);z-index:1}
 #cardCont.on{opacity:.7;animation:blink 1.8s infinite}
 
 /* ---------- Pannelli ---------- */
-#panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,560px);max-height:88vh;z-index:11;pointer-events:auto;display:flex;flex-direction:column;padding:6px}
+#panel{will-change:transform;contain:layout;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,560px);max-height:88vh;z-index:11;pointer-events:auto;display:flex;flex-direction:column;padding:6px}
 #panel .pin{overflow:auto;padding:16px 20px 16px;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#5a4630 transparent}
 #panel h2{font-family:'IM Fell English SC';font-weight:normal;color:var(--bone);letter-spacing:5px;font-size:25px;text-align:center;text-shadow:0 0 14px #000}
 #panel h2:after{content:'';display:block;height:16px;margin:4px auto 2px;width:min(100%,300px);background:var(--orn) no-repeat center/contain;opacity:.85}
@@ -145,35 +146,35 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #panel .row:after{content:'';order:1;flex:1;border-bottom:1px dotted #6b563688;margin:0 4px;transform:translateY(5px)}
 #panel .row .r{order:2;color:var(--brass2);white-space:nowrap}
 #panel .row.bad .r{color:var(--blood)}
-#panel .row svg{width:42px;height:22px;flex:0 0 42px}
+#panel .row img{width:42px;height:22px;flex:0 0 42px}
 #panel .btns{display:flex;flex-direction:column;gap:8px;margin-top:14px}
 .pbtn{position:relative;padding:12px 16px 12px 30px;border:1px solid #4a3a26;color:var(--bone);font-size:17px;border-radius:2px;letter-spacing:1px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;
-  background-image:var(--noise),linear-gradient(#1c1610,#100c08);box-shadow:inset 0 1px 0 #ffffff0d,inset 0 0 14px #000,0 2px 6px #0008;transition:border-color .2s,box-shadow .2s,color .2s}
+  background-image:radial-gradient(ellipse,transparent 55%,#0009 100%),var(--noise),linear-gradient(#1c1610,#100c08);box-shadow:inset 0 1px 0 #ffffff0d,0 2px 6px #0008;transition:border-color .2s,box-shadow .2s,color .2s}
 .pbtn:before{content:'';position:absolute;left:12px;top:50%;width:6px;height:6px;margin-top:-3px;border:1px solid var(--brass);transform:rotate(45deg);opacity:.7}
-.pbtn:hover,.pbtn:focus-visible{border-color:var(--brass);color:#fff3d6;box-shadow:inset 0 0 14px #000,0 0 14px #3d7a6044;outline:none}
+.pbtn:hover,.pbtn:focus-visible{border-color:var(--brass);color:#fff3d6;box-shadow:0 0 10px #3d7a6044;outline:none}
 .pbtn:active{transform:translateY(1px)}
 .pbtn:disabled{opacity:.35}
 .pbtn.main{justify-content:center;text-align:center;padding-left:16px;color:#f3dfb5;border-color:var(--brass);letter-spacing:3px;
-  background-image:var(--noise),linear-gradient(#3a2a16,#1b130a);box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5755,inset 0 0 18px #000,0 3px 10px #000a}
+  background-image:var(--noise),linear-gradient(#3a2a16,#1b130a);box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5755,0 3px 10px #000a}
 .pbtn.main:before{display:none}
 .pbtn .r{color:var(--brass2);font-size:14px;font-style:italic;font-family:'IM Fell English';letter-spacing:0}
 .pbtn small{font-family:'IM Fell English';font-size:13px;opacity:.7;letter-spacing:0;font-style:italic}
 .note{font-size:14px;color:var(--bone2);font-style:italic;margin-top:8px;text-align:center}
-#panel.cursedP{border-color:var(--verd);box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 0 5px #2f6a52,inset 0 0 90px #0a2a1c,0 0 50px #2f885544,0 24px 70px #000e}
-#panel.cursedP h2{color:var(--bile);filter:url(#eld);text-shadow:0 0 16px #2f8a5a}
+#panel.cursedP{border-color:var(--verd);box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 0 5px #2f6a52,0 0 24px #2f885544,0 12px 30px #000c}#panel.cursedP:after{opacity:1;background:radial-gradient(ellipse at 50% 50%,transparent 35%,#0a3a24cc 100%)}
+#panel.cursedP h2{color:var(--bile);animation:wob 3.4s ease-in-out infinite;text-shadow:0 0 16px #2f8a5a}
 #panel.catch{animation:pin .4s ease-out}
-@keyframes pin{from{transform:translate(-50%,-46%) scale(.94);opacity:0;filter:blur(6px)}}
+@keyframes pin{from{transform:translate(-50%,-47%) scale(.96);opacity:0}}
 
 /* Tavola naturalistica */
 .plate{position:relative;margin:4px auto 6px;max-width:380px;padding:10px 12px 8px;text-align:center;
-  background-image:var(--stain),linear-gradient(#c9b993,#a8956b);color:#2a1d10;box-shadow:inset 0 0 30px #5a3a1a88,0 4px 14px #000;border:1px solid #6b5636}
+  background-image:radial-gradient(ellipse,transparent 50%,#5a3a1a77 100%),var(--stain),linear-gradient(#c9b993,#a8956b);color:#2a1d10;box-shadow:0 4px 12px #000;border:1px solid #6b5636}
 .plate:before{content:'';position:absolute;inset:4px;border:1px solid #5a432888;pointer-events:none}
-.plate svg{width:100%;height:auto;max-height:150px;display:block;margin-top:14px}
+.plate img{width:100%;height:auto;max-height:150px;display:block;margin-top:14px}
 .plateNo{position:absolute;left:12px;top:7px;font-family:'IM Fell English SC';font-size:12px;letter-spacing:2px;opacity:.7}
 .plateKg{position:absolute;right:12px;top:7px;font-family:'IM Fell English SC';font-size:13px;letter-spacing:1px}
 .latin{font-style:italic;font-size:14px;opacity:.85;margin-top:-2px}
-.plate.cur{background-image:var(--stain),linear-gradient(#9fb39f,#6f8a76);box-shadow:inset 0 0 40px #0a3a1c99,0 0 24px #2f885566}
-.plate.cur svg{animation:twitch 4s infinite}
+.plate.cur{background-image:radial-gradient(ellipse,transparent 45%,#0a3a1c99 100%),var(--stain),linear-gradient(#9fb39f,#6f8a76);box-shadow:0 0 14px #2f885566}
+.plate.cur img{animation:twitch 4s infinite}
 @keyframes twitch{0%,92%,100%{transform:none}93%{transform:translate(2px,-1px) skewX(3deg)}95%{transform:translate(-2px,1px)}97%{transform:skewX(-2deg)}}
 .stars{text-align:center;font-size:24px;letter-spacing:8px;color:var(--brass2);text-shadow:0 0 12px #e8a04a88;margin:6px 0 0}
 .stars i{color:#3a3024;font-style:normal;text-shadow:none}
@@ -182,15 +183,15 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 /* Stiva e taccuino: griglia di casse */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:6px}
 .cell{position:relative;aspect-ratio:1/1;padding:6px 4px 4px;border:1px solid #4a3a26;text-align:center;cursor:pointer;font-family:'IM Fell English';
-  background-image:repeating-linear-gradient(0deg,transparent 0 22px,#0006 22px 24px),var(--noise),linear-gradient(#2a2016,#16110b);box-shadow:inset 0 0 16px #000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--bone)}
-.cell svg{width:92%;height:auto;max-height:46px}
+  background-image:radial-gradient(ellipse,transparent 50%,#000a 100%),repeating-linear-gradient(0deg,transparent 0 22px,#0006 22px 24px),var(--noise),linear-gradient(#2a2016,#16110b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--bone)}
+.cell img{width:92%;height:auto;max-height:46px;object-fit:contain}
 .cell .cn{font-size:11px;line-height:1.1;color:var(--bone2);max-height:2.3em;overflow:hidden}
 .cell .ck{font-size:11px;color:var(--brass2);font-family:'IM Fell English SC';letter-spacing:1px}
 .cell .cs{font-size:9px;letter-spacing:2px;color:var(--brass2)}
 .cell.empty{opacity:.35;cursor:default;font-style:italic;font-size:12px;color:var(--dim)}
-.cell.cur{border-color:var(--verd);box-shadow:inset 0 0 22px #0a3a1c,0 0 10px #2f885555;animation:twitch 5s infinite}
+.cell.cur{border-color:var(--verd);background-image:radial-gradient(ellipse,transparent 40%,#0a3a1ccc 100%),repeating-linear-gradient(0deg,transparent 0 22px,#0006 22px 24px),var(--noise),linear-gradient(#1e2a20,#0f160f)}
 .cell.cur .cn{color:var(--bile)}
-.cell.unk svg{filter:brightness(0) opacity(.5)}
+.cell.unk img{opacity:.35;filter:brightness(0)}
 .cell:hover:not(.empty){border-color:var(--brass)}
 
 /* ---------- Pesca ---------- */
@@ -206,18 +207,18 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #powerBar{position:absolute;left:0;top:3px;bottom:3px;width:0;background:repeating-linear-gradient(90deg,#4a5a62 0 6px,#3a4850 6px 8px)}
 #powerBar.hot{background:repeating-linear-gradient(90deg,#d8b070 0 6px,#a88040 6px 8px);box-shadow:0 0 12px #ffd98a}
 #reelWrap{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(50vw,480px);padding:10px 18px 12px;transition:border-color .15s,box-shadow .15s}
-#reelWrap.warn{border-color:#ffb060;box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 50px #000,0 0 26px #ff905066}
-#reelWrap.run{border-color:var(--blood);box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 50px #2a0a05,0 0 34px #e0503a77;animation:jit .09s infinite alternate}
+#reelWrap.warn{border-color:#ffb060;box-shadow:inset 0 0 0 4px #0a0806,0 0 18px #ff905066}
+#reelWrap.run{border-color:var(--blood);box-shadow:inset 0 0 0 4px #0a0806,0 0 22px #e0503a77;animation:jit .09s infinite alternate}
 #reelWrap.calm{border-color:#7a9a6a}
-#reelWrap.cursedR{border-color:var(--bile);box-shadow:inset 0 0 0 4px #0a0806,inset 0 0 60px #0a3a1c,0 0 34px #2f885599}
+#reelWrap.cursedR{border-color:var(--bile);box-shadow:inset 0 0 0 4px #0a0806,0 0 22px #2f885599}
 @keyframes jit{to{transform:translateX(calc(-50% + 2px))}}
 #rState{font-family:'IM Fell English SC';text-align:center;font-size:25px;letter-spacing:6px;height:30px;color:#bfe8a8;text-shadow:0 0 12px #000}
-#reelWrap.warn #rState{color:#ffcf7a}#reelWrap.run #rState{color:#ff8a6a}#reelWrap.cursedR #rState{color:var(--bile);filter:url(#eld)}
+#reelWrap.warn #rState{color:#ffcf7a}#reelWrap.run #rState{color:#ff8a6a}#reelWrap.cursedR #rState{color:var(--bile);animation:wob 3.4s ease-in-out infinite}
 #rTrack{position:relative;height:32px;margin:6px 0 8px;background:linear-gradient(transparent 60%,#13262044 60%,#0a1a1488);border-bottom:1px solid #3d7a6066}
 #rBoat{position:absolute;left:-2px;bottom:3px;width:26px;height:22px;color:var(--brass)}
 #rLine{position:absolute;left:22px;bottom:12px;height:1px;background:#d9cfb6aa;width:0;box-shadow:0 0 3px #fff3}
 #rFish{position:absolute;bottom:2px;width:40px;height:20px;margin-left:-20px;transition:left .08s linear;color:#c9c2b0}
-#rFish svg{width:100%;height:100%}
+#rFish img{width:100%;height:100%}
 #rFish.glitch{animation:gl .12s infinite steps(2)}
 @keyframes gl{50%{transform:translate(4px,-3px) scaleX(-1);filter:hue-rotate(120deg)}}
 #reelWrap.run #rFish{animation:shk .08s infinite alternate}
@@ -235,12 +236,12 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #pop.on{animation:popA 1.5s ease-out forwards}
 #pop.bad{color:#ff9a7a;text-shadow:0 0 18px #e0503a,0 0 4px #000}
 #pop.grn{color:var(--bile);text-shadow:0 0 20px #3f9,0 0 4px #000;font-family:'IM Fell English';font-style:italic;letter-spacing:2px}
-@keyframes popA{0%{opacity:0;transform:translate(-50%,-50%) scale(.6);filter:blur(6px)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12);filter:blur(0)}22%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1);filter:blur(3px)}}
+@keyframes popA{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}22%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
 
 /* ---------- Lettera nella bottiglia ---------- */
 #note{position:fixed;inset:0;z-index:14;background:radial-gradient(ellipse,#000a,#000e);display:flex;align-items:center;justify-content:center;pointer-events:auto;padding:4vh 4vw}
-#note .paper{background-image:var(--stain),linear-gradient(135deg,#cdbf9e,#a8976f);color:#2a1f12;max-width:540px;padding:30px 30px;font-style:italic;font-size:19px;line-height:1.55;
-  box-shadow:inset 0 0 50px #5a3a1a99,0 10px 50px #000;transform:rotate(-1.2deg);position:relative;
+#note .paper{background-image:radial-gradient(ellipse,transparent 50%,#5a3a1a88 100%),var(--stain),linear-gradient(135deg,#cdbf9e,#a8976f);color:#2a1f12;max-width:540px;padding:30px 30px;font-style:italic;font-size:19px;line-height:1.55;
+  box-shadow:0 10px 30px #000;transform:rotate(-1.2deg);position:relative;
   -webkit-mask:var(--torn) center/100% 100%;mask:var(--torn) center/100% 100%}
 #note .paper:first-letter{font-family:'IM Fell English SC';font-size:2.4em;float:left;line-height:.9;margin:4px 6px 0 0;color:#5a1f12;font-style:normal}
 #note .sig{text-align:right;margin-top:12px;font-family:'IM Fell English SC'}
@@ -252,18 +253,18 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 #menu .mL{position:relative;display:flex;flex-direction:column;align-items:center;z-index:1}
 #menuSig{position:absolute;left:50%;top:50%;width:min(110vh,110vw);height:min(110vh,110vw);transform:translate(-50%,-50%);opacity:.08;pointer-events:none;animation:spin 220s linear infinite}
 #tent{position:absolute;left:0;right:0;bottom:0;height:46vh;pointer-events:none;opacity:.9}
-#tent g{transform-box:fill-box;transform-origin:50% 100%;animation:sway 9s ease-in-out infinite alternate}
+#tent svg{position:absolute;inset:0;width:100%;height:100%;will-change:transform;animation:sway 9s ease-in-out infinite alternate}
 @keyframes sway{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
-#menu h1{font-family:'IM Fell English SC';font-weight:normal;font-size:clamp(46px,11vw,104px);letter-spacing:12px;color:#e9e0cc;line-height:1;filter:url(#eld);
+#menu h1{font-family:'IM Fell English SC';font-weight:normal;font-size:clamp(46px,11vw,104px);letter-spacing:12px;color:#e9e0cc;line-height:1;animation:wob 3.4s ease-in-out infinite;
   text-shadow:0 0 30px #000,0 0 70px #2f6a4a99,0 3px 0 #000}
 #menu .chap{font-style:italic;font-size:clamp(17px,3.4vw,23px);color:var(--bone2);margin:10px 0 6px;text-align:center}
 #menu .orn{width:min(70vw,320px);margin-bottom:16px}
 #menu input{background:#0b0907cc;border:none;border-bottom:1px solid var(--brass);color:var(--bone);font-family:'IM Fell English';font-style:italic;font-size:19px;padding:10px 14px;width:min(80vw,310px);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
 #menu input::placeholder{color:#7d7566}
 #menu .mb{margin-top:10px;width:min(80vw,310px);padding:12px;font-size:19px;letter-spacing:5px;color:#f3dfb5;border:1px solid var(--brass);
-  background-image:var(--noise),linear-gradient(#3a2a16,#1b130a);box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5755,inset 0 0 18px #000,0 4px 14px #000}
-#menu .mb.sec{border-color:#5a4630;color:var(--bone2);font-size:16px;letter-spacing:3px;background-image:var(--noise),linear-gradient(#1c1610,#100c08);box-shadow:inset 0 0 14px #000}
-#menu .mb:hover{box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5799,inset 0 0 18px #000,0 0 20px #3d7a6055}
+  background-image:var(--noise),linear-gradient(#3a2a16,#1b130a);box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5755,0 4px 14px #000}
+#menu .mb.sec{border-color:#5a4630;color:var(--bone2);font-size:16px;letter-spacing:3px;background-image:radial-gradient(ellipse,transparent 55%,#0009 100%),var(--noise),linear-gradient(#1c1610,#100c08);box-shadow:inset 0 0 14px #000}
+#menu .mb:hover{box-shadow:inset 0 0 0 3px #120d08,inset 0 0 0 4px #b08d5799,0 0 20px #3d7a6055}
 #menuMsg{margin-top:18px;font-style:italic;color:var(--dim);text-align:center;max-width:520px;font-size:15px}
 #menuLists{position:relative;z-index:1;display:flex;gap:28px;margin-top:16px;flex-wrap:wrap;justify-content:center;font-size:14px;color:var(--dim);max-width:700px}
 #menuLists h4{font-family:'IM Fell English SC';font-weight:normal;color:var(--bone2);letter-spacing:3px;font-size:13px;margin-bottom:4px;text-align:center;border-bottom:1px solid #5a463066;padding-bottom:3px}
@@ -296,7 +297,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
   #dlg{width:min(70vw,760px);padding:10px 16px 16px 12px;gap:12px;bottom:calc(8px + env(safe-area-inset-bottom))}#dlgPort{flex-basis:66px;height:80px}
   #dlgWho{font-size:13px;margin-bottom:3px}#dlgTxt{font-size:16px;min-height:44px;line-height:1.35}
   #panel{max-height:95vh;width:min(92vw,660px)}#panel .pin{padding:10px 16px}#panel h2{font-size:20px}#panel h2:after{height:12px}#panel .subt{font-size:14px;margin-bottom:6px}#panel .row{font-size:15px;padding:3px 2px}
-  .pbtn{padding:8px 12px 8px 28px;font-size:15px}.pbtn.main{padding:9px 12px}.stars{font-size:18px}.plate svg{max-height:96px}.plate{padding:6px 10px 6px}
+  .pbtn{padding:8px 12px 8px 28px;font-size:15px}.pbtn.main{padding:9px 12px}.stars{font-size:18px}.plate img{max-height:96px}.plate{padding:6px 10px 6px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
   #card{padding:4vh 8vw}#card .ln{font-size:clamp(16px,3.8vh,23px);margin:3px 0}#card .ttl{font-size:clamp(26px,10vh,48px)}
   #fishHint{top:calc(50px + env(safe-area-inset-top));bottom:auto;font-size:17px}#fishHint.alert{font-size:26px}
@@ -318,12 +319,6 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <filter id="eld" x="-5%" y="-20%" width="110%" height="140%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.011 0.045" numOctaves="2" seed="7" result="t">
-      <animate attributeName="baseFrequency" values="0.011 0.045;0.016 0.07;0.011 0.045" dur="7s" repeatCount="indefinite"/>
-    </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="t" scale="4"/>
-  </filter>
   <symbol id="sigil" viewBox="-100 -100 200 200">
     <g fill="none" stroke="currentColor">
       <circle r="96" stroke-width="1.2"/><circle r="88" stroke-width=".6"/><circle r="52" stroke-width="1"/>
@@ -361,7 +356,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 <div id="pop"></div>
 
 <div id="toast"></div>
-<div id="whisper" class="eld"></div>
+<div id="whisper"></div>
 <div id="flash"></div>
 
 <div id="dlg" class="frame hidden"><div id="dlgPort"></div><div id="dlgBody"><div id="dlgWho"></div><div id="dlgTxt"></div></div><div id="dlgNext">▼</div></div>
@@ -371,7 +366,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 
 <div id="menu" class="hidden">
   <svg id="menuSig" style="color:#b08d57"><use href="#sigil"/></svg>
-  <svg id="tent" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMax slice"></svg>
+  <div id="tent"></div>
   <div class="mL">
     <h1>MAREA NERA</h1>
     <div class="chap" id="menuChap">Capitolo I — Il Pescato</div>
@@ -561,8 +556,19 @@ function shade(hex, a) {
 }
 (function textures() {
   const R = document.documentElement.style;
-  R.setProperty('--noise', svgURL(`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><filter id='n' filterUnits='userSpaceOnUse' x='0' y='0' width='180' height='180'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .86  0 0 0 0 .8  0 0 0 0 .64  .38 0 0 0 -.1'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`));
-  R.setProperty('--stain', svgURL(`<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'><filter id='s' filterUnits='userSpaceOnUse' x='0' y='0' width='520' height='520'><feTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='4' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .14  0 0 0 0 .09  0 0 0 0 .04  1.3 0 0 0 -.55'/></filter><rect width='100%' height='100%' filter='url(#s)'/></svg>`));
+  // rumore e macchie disegnati una volta sola su canvas (le texture SVG con filtri erano lentissime da ridisegnare)
+  const nc = document.createElement('canvas'); nc.width = nc.height = 128; const ng = nc.getContext('2d'); const im = ng.createImageData(128, 128);
+  for (let i = 0; i < im.data.length; i += 4) { const v = Math.random(); im.data[i] = 219; im.data[i + 1] = 204; im.data[i + 2] = 163; im.data[i + 3] = v > .6 ? (v - .6) * 48 : 0; }
+  ng.putImageData(im, 0, 0); R.setProperty('--noise', `url(${nc.toDataURL()})`);
+  const SZ = 256, sc = document.createElement('canvas'); sc.width = sc.height = SZ; const sg = sc.getContext('2d');
+  for (let i = 0; i < 46; i++) {
+    const x = rand(0, SZ), y = rand(0, SZ), r = rand(14, 70), a = rand(.04, .14);
+    for (const ox of [-SZ, 0, SZ]) for (const oy of [-SZ, 0, SZ]) {
+      const gr = sg.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, `rgba(40,24,10,${a})`); gr.addColorStop(.6, `rgba(40,24,10,${a * .5})`); gr.addColorStop(1, 'rgba(40,24,10,0)');
+      sg.fillStyle = gr; sg.fillRect(x + ox - r, y + oy - r, r * 2, r * 2);
+    }
+  }
+  R.setProperty('--stain', `url(${sc.toDataURL()})`);
   R.setProperty('--crn', svgURL(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='#b08d57' stroke-linecap='round'>
     <path d='M3 58V9Q3 3 9 3H58' stroke-width='1.3'/><path d='M8 58V13Q8 8 13 8H58' stroke-width='.6' opacity='.55'/>
     <path d='M10 10C26 11 33 25 25 31C18 36 12 28 17 24C20 22 23 25 21 27' stroke-width='1.8'/>
@@ -591,7 +597,7 @@ let svgUid = 0;
 /* ---------- Ritratti incisi ---------- */
 function portrait(who) {
   const id = 'p' + (svgUid++), h = `url(#${id})`;
-  const wrap = (inner, bg = '#2a2318') => `<svg viewBox="0 0 100 120"><defs>${hatchDef(id, 40, .7, 2.6)}<radialGradient id="${id}b" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="#050404"/></radialGradient></defs><rect width="100" height="120" fill="url(#${id}b)"/>${inner}</svg>`;
+  const wrap = (inner, bg = '#2a2318') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><defs>${hatchDef(id, 40, .7, 2.6)}<radialGradient id="${id}b" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="#050404"/></radialGradient></defs><rect width="100" height="120" fill="url(#${id}b)"/>${inner}</svg>`;
   if (who === 'ABEL') return wrap(`
     <path d="M12 120C14 96 32 86 50 86S86 96 88 120Z" fill="#2b2620"/><path d="M37 120l3-28h20l3 28Z" fill="#7a6e58"/><path d="M37 120l3-28h20l3 28Z" fill="${h}" opacity=".3"/>
     <path d="M43 78h14v12H43z" fill="#7d6a56"/><ellipse cx="50" cy="60" rx="16" ry="20" fill="#a08a72"/>
@@ -639,7 +645,8 @@ function handSVG(x, y, s, r) {
   return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})" stroke="${INK}" stroke-width=".8" fill="#c9a58a"><ellipse cx="0" cy="0" rx="5" ry="4"/>
     <path d="M-4 -2l-4-7M-1.5 -3.5l-2-9M1.5 -3.5l1-9.5M4 -2.5l3.5-8M5 1l6-2" stroke="#c9a58a" stroke-width="2.4" stroke-linecap="round"/><path d="M-4 -2l-4-7M-1.5 -3.5l-2-9M1.5 -3.5l1-9.5M4 -2.5l3.5-8M5 1l6-2" stroke="${INK}" stroke-width=".5" fill="none"/></g>`;
 }
-function fishSVG(k, o = {}) {
+function fishSVGraw(k) {
+  const o = {};
   const id = 'f' + (svgUid++), f = FISH[k] || FISH.aringa, col = f.col;
   const defs = `<defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(col, -.45)}"/><stop offset=".5" stop-color="${col}"/><stop offset="1" stop-color="${shade(col, .5)}"/></linearGradient>${hatchDef(id + 'h')}
     <radialGradient id="${id}l"><stop offset="0" stop-color="#d8ffe6"/><stop offset=".4" stop-color="#7dffb0"/><stop offset="1" stop-color="#7dffb0" stop-opacity="0"/></radialGradient></defs>`;
@@ -699,8 +706,13 @@ function fishSVG(k, o = {}) {
       <path d="M58 36q4 3 8 0" stroke="${INK}" fill="none"/><circle cx="74" cy="48" r="3" fill="#c8a050" stroke="${INK}" stroke-width=".6"/>`;
   }
   if (k === 'respira') s = `<g transform="translate(90 50)"><g><animateTransform attributeName="transform" type="scale" values="1 1;1.02 1.07;1 1" dur="3.4s" repeatCount="indefinite"/><g transform="translate(-90 -50)">${s}</g></g></g>`;
-  return `<svg viewBox="0 0 200 100" ${o.cls ? `class="${o.cls}"` : ''}>${defs}${s}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100">${defs}${s}</svg>`;
 }
+// ogni disegno viene trasformato in immagine una volta sola e poi riusato: il browser non deve più ridisegnare l'SVG a ogni frame
+const IMGC = {};
+const asImg = (key, make) => { if (!(key in IMGC)) { const svg = make(); IMGC[key] = svg ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) : null; } return IMGC[key] ? `<img src="${IMGC[key]}" alt="" draggable="false">` : null; };
+const fishSVG = k => asImg('f:' + k, () => fishSVGraw(k));
+const portraitImg = who => asImg('p:' + who + (who === 'JONAH' && S && S.capitolo >= 2 ? ':wet' : ''), () => portrait(who));
 
 /* ---------- Tentacoli del menu ---------- */
 (function tentacles() {
@@ -716,7 +728,7 @@ function fishSVG(k, o = {}) {
       L.push(`${(x + nx * wd / 2).toFixed(1)},${(y + ny * wd / 2).toFixed(1)}`); Rr.unshift(`${(x - nx * wd / 2).toFixed(1)},${(y - ny * wd / 2).toFixed(1)}`);
       if (i % 3 === 1 && s < .85) su.push(`<circle cx="${(x - nx * wd * .28).toFixed(1)}" cy="${(y - ny * wd * .28).toFixed(1)}" r="${(wd * .14).toFixed(1)}" fill="#0f1a14" stroke="#1d3328" stroke-width=".8"/>`);
     }
-    html += `<g style="animation-duration:${7 + n * 1.7}s;animation-delay:${-n * 2}s"><polygon points="${L.concat(Rr).join(' ')}" fill="#030504" stroke="#11201a" stroke-width="1.2"/>${su.join('')}</g>`;
+    html += `<svg viewBox="0 0 1000 400" preserveAspectRatio="xMidYMax slice" style="animation-duration:${7 + n * 1.7}s;animation-delay:${-n * 2}s;transform-origin:${x0 / 10}% 100%"><polygon points="${L.concat(Rr).join(' ')}" fill="#030504" stroke="#11201a" stroke-width="1.2"/>${su.join('')}</svg>`;
   });
   el.innerHTML = html;
 })();
@@ -1260,7 +1272,7 @@ function nextLine() {
   }
   const [who, txt] = DLG.q.shift();
   const w = $('dlgWho'); w.textContent = who; w.className = who === 'TU' ? 'tu' : (who === '???' ? 'x' : who === 'UOMO IN NERO' ? 'nero' : '');
-  const pt = portrait(who), pe = $('dlgPort'); pe.innerHTML = pt || ''; pe.className = pt ? '' : 'none';
+  const pt = portraitImg(who), pe = $('dlgPort'); pe.innerHTML = pt || ''; pe.className = pt ? '' : 'none';
   $('dlg').className = 'frame ' + (who === '???' ? 'x' : who === 'UOMO IN NERO' ? 'nero' : (who === 'JONAH' && S && S.capitolo >= 2) ? 'wet' : '');
   DLG.full = txt.replace('{nome}', S ? S.nome : ''); DLG.i = 0; DLG.typing = true; $('dlgTxt').textContent = '';
   clearInterval(DLG.timer);
@@ -2127,15 +2139,16 @@ function setHud(on) {
   $('fsBtn').classList.toggle('hidden', !fsSupported);
   $('joy').classList.toggle('hidden', !isTouch); $('keysHint').classList.toggle('hidden', isTouch);
 }
-let hudT = 0;
+let hudT = 0, lastHud = '', lastC = '';
 const CARDS = [['N', 0, 1], ['E', -1, 0], ['S', 0, -1], ['O', 1, 0], ['NE', -.7, .7], ['SE', -.7, -.7], ['SO', .7, -.7], ['NO', .7, .7]];
 function updateHud(dt) {
   hudT -= dt; if (hudT > 0) return; hudT = .15;
   const tl = $('hudTL');
   let slots = ''; for (let i = 0; i < capacity(); i++) { const it = S.stiva[i]; slots += `<i class="${it ? (FISH[it.k].cursed || it.k === 'annegato' ? 'x' : 'f') : ''}"></i>`; }
-  tl.innerHTML = `<div class="hDay">Giorno <b>${ROMAN_N(S.giorno)}</b><span class="${isNight() ? 'n' : ''}">${fmtClock()}</span></div>
+  const hh = `<div class="hDay">Giorno <b>${ROMAN_N(S.giorno)}</b><span class="${isNight() ? 'n' : ''}">${fmtClock()}</span></div>
     <div class="hMon"><b>${S.soldi}</b> monete · <i class="${S.debito > 0 ? '' : 'ok'}">${S.debito > 0 ? 'debito ' + S.debito : 'debito saldato'}</i></div><div class="hold">${slots}</div>`;
-  document.documentElement.style.setProperty('--c', clamp(corr + corrPulse, 0, 1).toFixed(2));
+  if (hh !== lastHud) { tl.innerHTML = hh; lastHud = hh; }
+  const cv = (Math.round(clamp(corr + corrPulse, 0, 1) * 20) / 20).toFixed(2); if (cv !== lastC) { document.documentElement.style.setProperty('--c', cv); lastC = cv; }
   // bussola
   const cf = new THREE.Vector3(); camera.getWorldDirection(cf); cf.y = 0; cf.normalize();
   const rx = -cf.z, rz = cf.x; const W = $('compass').clientWidth;
@@ -2334,6 +2347,7 @@ function updateStory(dt) {
     if (R.lightningT < 0) { R.lightningT = rand(9, 18); flash(.35); setTimeout(SFX.thunder, rand(300, 1200)); }
   }
 }
+let glSkip = false; const panelEl = $('panel');
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min((now - lastT) / 1000, .05); lastT = now; T += dt;
@@ -2342,7 +2356,8 @@ function frame(now) {
   updateBoat(dt); updateStory(dt); updateWorld(dt); updateCamera(dt);
   if (S && mode !== 'menu' && mode !== 'loading') updateHud(dt);
   audioUpdate(dt);
-  composer.render();
+  glSkip = !glSkip;
+  if (!window.__noGL && !CARD.open && !(glSkip && !panelEl.classList.contains('hidden'))) composer.render();
 }
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight; camera.fov = camera.aspect < 1 ? 74 : 60; camera.updateProjectionMatrix();
