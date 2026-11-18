@@ -106,6 +106,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
   font-family:'IM Fell English';font-style:italic;font-size:clamp(24px,5vw,50px);color:var(--bile);text-shadow:0 0 22px #3f9,0 0 40px #0a4,0 0 4px #000;opacity:0;transition:opacity 1.8s,transform 4s;text-align:center;padding:0 8vw;letter-spacing:2px;transform:scale(.97)}
 #whisper.on{opacity:.88;transform:scale(1.03)}
 #flash{position:fixed;inset:0;background:#e8fff0;opacity:0;pointer-events:none;z-index:9;transition:opacity .15s}
+#scare{position:fixed;inset:0;z-index:13;pointer-events:none;display:flex;align-items:center;justify-content:center;background:#000;opacity:0}#scare.on{opacity:.62}#scare img{height:100%;max-width:100%;object-fit:contain}
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:20;transition:opacity 1.2s}
 
 /* ---------- Dialoghi: ritratto inciso + registro ---------- */
@@ -371,6 +372,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
 <div id="toast"></div>
 <div id="whisper"></div>
 <div id="flash"></div>
+<div id="scare"></div>
 
 <div id="dlg" class="frame hidden"><div id="dlgPort"></div><div id="dlgBody"><div id="dlgWho"></div><div id="dlgTxt"></div></div><div id="dlgNext">▼</div></div>
 <div id="panel" class="frame hidden"></div>
@@ -818,6 +820,23 @@ const SFX = {
   rumble: () => { burst(4, 70, 0.5, 0.7, 'lowpass', 0, 1); tone(36, 4, 'sine', 0.35, 0, 30); },
   whisper: () => { for (let i = 0; i < 14; i++) burst(rand(0.12, 0.35), rand(700, 2800), rand(4, 10), rand(0.03, 0.07), 'bandpass', i * rand(0.09, 0.17), 0.04); },
   sell: () => { tone(988, 0.1, 'triangle', 0.08); tone(1318, 0.18, 'triangle', 0.08, 0.07); },
+  knock: () => { burst(.22, 130, 1.4, .7, 'lowpass'); tone(52, .3, 'sine', .45); tone(78, .12, 'triangle', .12); },
+  moan: (pan = 0, vol = 1) => {
+    if (!AU.ctx) return; const C = AU.ctx, t = C.currentTime;
+    const f = C.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 360; f.Q.value = 6;
+    const g = C.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2 * vol, t + 1.4); g.gain.exponentialRampToValueAtTime(.0001, t + 5.5);
+    const p = C.createStereoPanner ? C.createStereoPanner() : null; if (p) p.pan.value = pan;
+    [1, 1.008, 1.498].forEach(m => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(64 * m, t); o.frequency.exponentialRampToValueAtTime(47 * m, t + 2.4); o.frequency.exponentialRampToValueAtTime(73 * m, t + 5.2); o.connect(f); o.start(t); o.stop(t + 5.6); });
+    f.connect(g); (p ? g.connect(p) : g).connect(AU.sfx);
+  },
+  hull: () => { tone(rand(110, 170), .7, 'sawtooth', .025, 0, rand(70, 95)); tone(rand(200, 260), .4, 'triangle', .015, .3, rand(150, 180)); },
+  breath: () => { burst(1.6, 420, 2, .14, 'bandpass', 0, .7); burst(1.2, 380, 2, .1, 'bandpass', 1.9, .5); },
+  slap: () => { burst(.14, 800, 1, .45, 'lowpass'); burst(.1, 2200, 2, .12, 'bandpass', .02); tone(90, .15, 'sine', .2); },
+  sputter: () => { for (let i = 0; i < 5; i++) burst(.08, 1400, 1, .12, 'bandpass', i * .12); },
+  bellDeep: () => {
+    if (!AU.ctx) return; const C = AU.ctx, lp = C.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500; lp.connect(AU.sfx);
+    [0, 2.8, 5.6].forEach(w => [1, 2.01, 2.76, 5.4].forEach((m, i) => tone(92 * m, 4.5, 'sine', .14 / (i + 1), w, null, lp)));
+  },
   perfect: () => { [784, 988, 1175, 1568].forEach((f, i) => tone(f, .22, 'triangle', .07, i * .06)); },
   warn: () => { tone(180, .09, 'square', .05); tone(150, .12, 'square', .05, .1); },
   snap: () => { tone(900, .35, 'sawtooth', .07, 0, 140); burst(.2, 2000, 2, .12); },
@@ -1589,11 +1608,17 @@ function updateFishing(dt) {
       SFX.splash(); splashAt(F.castTo.x, F.castTo.z, .8); F.phase = 'wait'; F.fish = chooseFish(); F.bob.copy(F.castTo);
       F.wait = F.spot.fossa ? rand(.8, 1.4) : (F.nothing ? rand(2.5, 3.5) : rand(1.2, 3) * (F.perfectCast ? .55 : 1)); F.fakeT = rand(.5, 1.2); F.dip = 0;
       setHint('Aspetta che il galleggiante vada sotto...', 'soft');
+      F.scary = !F.spot.fossa && !F.nothing && scareLevel() >= 2 && Math.random() < .14; F.scaryDone = false;
     }
   } else if (F.phase === 'wait') {
     F.wait -= dt; F.fakeT -= dt;
     if (F.fakeT < 0 && !F.nothing) { F.dip = .2; F.fakeT = rand(.8, 1.6); SFX.tick(); }
     F.dip *= Math.exp(-dt * 6);
+    if (F.scary && !F.scaryDone && F.wait < .9) {
+      F.scaryDone = true; F.wait += 2.2; F.dip = 1.6; SFX.heart(); vib([60, 40, 60]);
+      setHint(pick(['Il galleggiante è sparito sotto... e poi è tornato su. Lentamente.', 'Qualcosa ha preso l\'esca con delicatezza. Come una mano.', 'La lenza si è tesa verso il fondo. Poi niente.']), 'weird');
+      setTimeout(() => whisper(pick(['Non questo.', 'Più giù, ' + S.nome + '.', 'Ti vedo.']), 2200), 500);
+    }
     if (F.wait <= 0) {
       if (F.nothing) { F.phase = 'pause'; F.t = 1.4; setHint(pick(['Niente. Il pesce qui non c\'è più.', 'Il mare tace. Il pesce è andato altrove.', 'Niente. Come se sotto non ci fosse più niente.']), 'soft'); bobber.visible = false; fishLine.visible = false; setAct('LANCIA'); }
       else { F.phase = 'bite'; F.biteT = 0; F.bite = F.fish === 'idolo' ? 3 : (1.6 + S.upgrade.canna * .4); setHint('ABBOCCA!', 'alert'); SFX.bite(); vib(F.fish === 'idolo' ? [80, 40, 300] : 70); F.dip = 1; splashAt(F.bob.x, F.bob.z, .7); }
@@ -1613,7 +1638,7 @@ function updateFishing(dt) {
     const to = boat.pos.clone().addScaledVector(fwdVec(), .8); to.y = boat.y + 1.3;
     leapFish.position.lerpVectors(F.landFrom, to, t); leapFish.position.y = lerp(H(F.landFrom.x, F.landFrom.z), to.y, t) + Math.sin(t * Math.PI) * 3.2;
     leapFish.rotation.set(0, boat.h + Math.PI / 2, Math.sin(t * Math.PI * 3) * .9 + (t - .5) * 2.4);
-    if (F.landT >= 1) { leapFish.visible = false; SFX.flop(); caught(); }
+    if (F.landT >= 1) { leapFish.visible = false; SFX.flop(); if (FISH[F.fish].cursed && scareLevel() >= 3 && Math.random() < .2) subliminal(); caught(); }
   } else if (F.phase === 'pause') {
     F.t -= dt; if (F.t <= 0) { F.phase = 'aim'; setHint(aimHint()); setAct('LANCIA'); }
   }
@@ -1711,7 +1736,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const lastDay = () => CHAP[S.capitolo].ultimo || S.giorno;
 const cursedInHold = () => S.stiva.filter(it => FISH[it.k].cursed || it.k === 'annegato');
 function startDay(first = false) {
-  resetRuntime(); clock = 360; S.stiva = []; DOCK_POS(); mode = 'cut';
+  resetRuntime(); SCARE.ev = null; figure.visible = false; hump.visible = false; hand.visible = false; boat.g.remove(hand); R.eyesOn = false; clock = 360; S.stiva = []; DOCK_POS(); mode = 'cut';
   if (S.capitolo === 1 && S.giorno === 3 && S.flags.idolo) delete S.flags.idolo;
   if (S.capitolo === 2) delete S.flags.idolo;
   actEl.classList.remove('cursed');
@@ -2347,9 +2372,9 @@ function updateWorld(dt) {
   waterU.uFogCol.value.copy(scene.fog.color); waterU.uFogDen.value = scene.fog.density; waterU.uCam.value.copy(camera.position); waterU.uCorr.value = C;
   boatLamp.getWorldPosition(waterU.uLantern.value);
   const night = isNight() || hour > 18.5;
-  const lanI = (night ? 1 : .35) * (1 + S.upgrade.lanterna * .6) * (1 + Math.sin(T * 13) * .04 + Math.sin(T * 7.3) * .03);
+  const lanI = (R.lamp ?? 1) * (night ? 1 : .35) * (1 + S.upgrade.lanterna * .6) * (1 + Math.sin(T * 13) * .04 + Math.sin(T * 7.3) * .03);
   waterU.uLanternI.value = lanI; boatLight.intensity = 8 * lanI; boatLight.distance = 20 + S.upgrade.lanterna * 10;
-  boatLight.color.set(S.flags.idolo ? 0x7dffb0 : 0xffa050); boatLamp.material.color.set(S.flags.idolo ? 0x9dffc0 : 0xffb060);
+  boatLight.color.set(S.flags.idolo ? 0x7dffb0 : 0xffa050); boatLamp.material.color.set(S.flags.idolo ? 0x9dffc0 : 0xffb060); if ((R.lamp ?? 1) < .5) boatLamp.material.color.set(0x110a05);
   // faro
   lighthouse.pivot.rotation.y += dt * .7;
   let beam = night || S.giorno >= 2 ? 1 : .35;
@@ -2410,8 +2435,142 @@ function updateWorld(dt) {
   // post
   post.uniforms.uTime.value = T; post.uniforms.uCorr.value = C;
 }
+/* =========================================================
+   PAURA — il regista degli eventi inquietanti
+   Il ritmo cresce col racconto: il Giorno I è quasi quieto, il Giorno VI no.
+   Nessun evento interrompe dialoghi o pannelli, e nessuno si ripete troppo.
+   ========================================================= */
+function scareLevel() {
+  const d = S.giorno, ch = S.capitolo;
+  let L = ch === 1 ? [0, 0, 1, 2][d] || 0 : ch === 2 ? { 4: 2, 5: 3, 6: 4 }[d] || 3 : 3;
+  if (S.flags.idolo) L = 4;
+  return L;
+}
+// --- la figura sull'acqua ---
+const figure = makePerson('#0b0d0c'); figure.scale.set(1.45, 1.6, 1.45); figure.children[1].material = M('#7e8a82'); figure.visible = false; scene.add(figure);
+const figLamp = new THREE.Mesh(new THREE.SphereGeometry(.12, 8, 6), new THREE.MeshBasicMaterial({ color: 0x9dffc0 })); figLamp.position.set(.45, 1.05, 0); figure.add(figLamp);
+const figGlow = new THREE.Mesh(new THREE.SphereGeometry(.9, 10, 8), new THREE.MeshBasicMaterial({ color: 0x3dff8a, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); figLamp.add(figGlow);
+// --- la mano sul bordo ---
+const handMat = M('#c4d2c8', { flatShading: false, roughness: .5, emissive: 0x2c3a32 });
+const hand = new THREE.Group();
+{ const arm = new THREE.Mesh(new THREE.CylinderGeometry(.07, .09, 1.4, 7), handMat); arm.position.set(0, -.7, 0); hand.add(arm);
+  const palm = new THREE.Mesh(new THREE.BoxGeometry(.26, .07, .3), handMat); palm.position.set(-.08, .02, 0); hand.add(palm);
+  hand.userData.fingers = [];
+  for (let i = 0; i < 4; i++) { const f = new THREE.Group(); f.position.set(-.2, .02, -.11 + i * .075); const s = new THREE.Mesh(new THREE.CylinderGeometry(.026, .03, .24, 5), handMat); s.rotation.z = Math.PI / 2; s.position.x = -.12; f.add(s); hand.add(f); hand.userData.fingers.push(f); }
+  const th = new THREE.Mesh(new THREE.CylinderGeometry(.028, .032, .18, 5), handMat); th.position.set(-.05, .02, .19); th.rotation.x = .9; hand.add(th); }
+hand.visible = false;
+// --- la schiena che emerge ---
+const hump = new THREE.Group();
+{ const hm = M('#060807', { roughness: .45, metalness: .2 });
+  const b = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), hm); b.scale.set(16, 3.4, 5.5); hump.add(b);
+  for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(new THREE.ConeGeometry(.5 + Math.sin(i / 8 * Math.PI) * .7, 2.2 + Math.sin(i / 8 * Math.PI) * 2.6, 5), hm); c.position.set(-11 + i * 2.75, 2.6 + Math.sin(i / 8 * Math.PI) * 1.4, 0); c.rotation.z = -.35; hump.add(c); }
+  for (let i = 0; i < 6; i++) { const e = new THREE.Mesh(new THREE.SphereGeometry(.22, 6, 4), new THREE.MeshBasicMaterial({ color: 0xd8ff7a })); e.position.set(9 + (i % 2) * 1.2, 1.2 + (i % 3) * .5, i < 3 ? 4.8 : -4.8); hump.add(e); } }
+hump.visible = false; scene.add(hump);
+// --- volto subliminale ---
+const FACE = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <defs><filter id="d" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="3" seed="11"/><feDisplacementMap in="SourceGraphic" scale="16"/></filter>
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0"/></filter>
+  <radialGradient id="s" cx=".46" cy=".4" r=".62"><stop offset="0" stop-color="#a9b6ad"/><stop offset=".6" stop-color="#6c7a71"/><stop offset="1" stop-color="#26302b"/></radialGradient>
+  <radialGradient id="v" cx=".5" cy=".5" r=".56"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000"/></radialGradient></defs>
+  <rect width="300" height="400" fill="#000"/>
+  <g filter="url(#d)" transform="rotate(-4 150 200)">
+    <ellipse cx="150" cy="210" rx="90" ry="150" fill="url(#s)"/>
+    <ellipse cx="112" cy="250" rx="30" ry="18" fill="#2b3530" opacity=".35"/><ellipse cx="196" cy="140" rx="24" ry="30" fill="#2b3530" opacity=".3"/><ellipse cx="170" cy="300" rx="22" ry="14" fill="#1f2a24" opacity=".4"/>
+    <path d="M84 168Q108 146 134 170Q130 210 108 214Q86 206 84 168Z" fill="#010201"/><path d="M168 176Q190 158 214 174Q214 204 194 208Q172 204 168 176Z" fill="#010201"/>
+    <path d="M100 210C98 240 104 262 98 300M118 212C120 236 114 256 120 280M190 206C192 236 186 256 192 290" stroke="#010201" stroke-width="3" fill="none"/>
+    <circle cx="106" cy="186" r="1.8" fill="#cfffe0"/><circle cx="194" cy="188" r="1.4" fill="#cfffe0"/>
+    <path d="M142 236q-4 10 -2 16M158 236q4 10 2 16" stroke="#1a221d" stroke-width="3" fill="none"/>
+    <path d="M118 286Q148 270 178 290Q186 350 154 384Q122 360 118 286Z" fill="#020202"/><path d="M124 292Q148 282 172 296" stroke="#4a5650" stroke-width="2" fill="none"/>
+    <g stroke="#070908" fill="none" stroke-linecap="round"><path d="M70 120C76 64 116 44 150 44S224 60 232 120" stroke-width="7"/><path d="M72 60C58 200 64 330 68 340" stroke-width="3"/><path d="M86 52C74 180 70 300 74 310" stroke-width="2"/><path d="M98 46C92 140 84 250 88 260" stroke-width="2"/><path d="M206 48C212 150 218 260 222 270" stroke-width="2"/><path d="M218 56C230 190 226 310 230 320" stroke-width="3"/><path d="M230 70C240 200 238 320 242 330" stroke-width="2"/><path d="M120 44C116 90 110 130 114 140" stroke-width="2"/><path d="M176 44C182 96 190 126 194 136" stroke-width="2"/></g>
+  </g>
+  <rect width="300" height="400" filter="url(#g)" opacity=".45"/><rect width="300" height="400" fill="url(#v)"/></svg>`);
+const scareEl = $('scare'); scareEl.innerHTML = `<img src="${FACE}" alt="">`;
+function subliminal() { scareEl.classList.add('on'); SFX.stinger(); vib([30, 20, 30]); setTimeout(() => scareEl.classList.remove('on'), 95); }
+
+const SCARE = { ev: null };
+const SCARES = {
+  knocks: { L: 1, modes: 'sail fish', run() {
+    [0, .55, 1.1].forEach((d, i) => setTimeout(() => { SFX.knock(); shake = Math.max(shake, .35 + i * .1); vib(40); }, d * 1000));
+    setTimeout(() => toast(R.knockSeen ? 'Ancora. Tre colpi. Da sotto la chiglia.' : 'Tre colpi. Da sotto la chiglia. Come qualcuno che chiede di entrare.', 4.5), 1500); R.knockSeen = true; return 3;
+  } },
+  moanFar: { L: 1, modes: 'sail fish', run() { SFX.moan(rand(-.9, .9)); setTimeout(() => toast(pick(['Un lamento, lontano. Troppo grave per una balena.', 'Qualcosa canta, sotto. Una nota sola.']), 4), 1800); return 6; } },
+  figure: { L: 1, modes: 'sail', run() {
+    const f = fwdVec(), r = rightVec(), p = boat.pos.clone().addScaledVector(f, rand(46, 58)).addScaledVector(r, rand(-12, 12));
+    if (COLL.some(c => Math.hypot(p.x - c.x, p.z - c.z) < c.r + 4)) return 0;
+    figure.position.copy(p); figure.lookAt(boat.pos.x, 0, boat.pos.z); figure.visible = true; SCARE.ev = { k: 'figure', t: 0, life: rand(8, 11) };
+    SFX.breath(); return 12;
+  } },
+  hand: { L: 2, modes: 'sail fish', run() {
+    const side = mode === 'fish' ? -1 : (Math.random() < .5 ? 1 : -1);
+    boat.g.add(hand); hand.scale.setScalar(2.4); hand.position.set(side * 1.78, .86, mode === 'fish' ? -1.2 : -3.1); hand.rotation.set(0, side > 0 ? 0 : Math.PI, 0); hand.visible = true;
+    SCARE.ev = { k: 'hand', t: 0, life: 2.8 }; setTimeout(SFX.slap, 250); return 4;
+  } },
+  hump: { L: 2, modes: 'sail', run() {
+    const f = fwdVec(), r = rightVec(), side = Math.random() < .5 ? 1 : -1;
+    const p = boat.pos.clone().addScaledVector(f, rand(35, 55)).addScaledVector(r, side * rand(40, 55));
+    hump.position.set(p.x, -6, p.z); hump.rotation.y = boat.h + Math.PI / 2 * side + rand(-.3, .3); hump.visible = true;
+    SCARE.ev = { k: 'hump', t: 0, life: 8 }; SFX.rumble(); setTimeout(() => { SFX.splash(); burstWave(); }, 1400);
+    setTimeout(() => toast(R.humpSeen ? 'È tornato. Ci sta girando intorno.' : 'Una schiena. Più lunga della Margaret. Ed era piena di occhi.', 4.5), 3800); R.humpSeen = true; return 9;
+  } },
+  lamp: { L: 2, modes: 'sail fish', ok: () => hourOf() > 16.5 || isNight() || R.overcast > .7 || corr > .25, run() {
+    SCARE.ev = { k: 'lamp', t: 0, life: 5.5 }; SFX.sputter(); return 6;
+  } },
+  bell: { L: 2, modes: 'sail fish', run() { SFX.bellDeep(); setTimeout(() => toast('Una campana. Rintocca da sotto il mare, dove non c\'è nessuna chiesa.', 4.5), 2500); return 6; } },
+  shadow: { L: 1, modes: 'sail', ok: () => !R.shadow, run() { triggerShadow(); return 7; } },
+  name: { L: 3, modes: 'sail fish', run() { SFX.whisper(); whisper(`${S.nome}... ${S.nome}...`, 2600); corrPulse = .35; return 4; } },
+  face: { L: 3, modes: 'sail fish', run() { subliminal(); return 2; } }
+};
+function scareDirector(dt) {
+  const L = scareLevel();
+  // suoni d'ambiente: anche nei giorni quieti il mare scricchiola e geme
+  R.ambT = (R.ambT ?? rand(20, 35)) - dt;
+  if (R.ambT < 0) { R.ambT = rand(18, 40) - L * 3; if (L >= 1 && Math.random() < .5) SFX.moan(rand(-1, 1), .5); else SFX.hull(); }
+  if (L <= 0 || paused || DLG.open || CARD.open || !panelEl.classList.contains('hidden')) return;
+  if (SCARE.ev) return;
+  R.scareT = (R.scareT ?? rand(25, 40)) - dt;
+  if (R.scareT > 0) return;
+  R.scareDone = R.scareDone || {};
+  const pool = Object.entries(SCARES).filter(([k, e]) => e.L <= L && e.modes.includes(mode) && (!e.ok || e.ok()) && (R.scareDone[k] || 0) < (k === 'knocks' || k === 'moanFar' ? 2 : 1) && k !== R.scareLast);
+  if (!pool.length) { R.scareT = 20; return; }
+  const [k, e] = pick(pool);
+  const dur = e.run();
+  if (!dur) { R.scareT = 3; return; }
+  R.scareDone[k] = (R.scareDone[k] || 0) + 1; R.scareLast = k;
+  R.scareT = dur + ({ 1: rand(70, 110), 2: rand(45, 75), 3: rand(35, 55), 4: rand(24, 40) }[L] || 60);
+  corrPulse = Math.max(corrPulse, .15 + L * .05);
+}
+function burstWave() { for (let i = 0; i < 4; i++) setTimeout(() => splashAt(hump.position.x + rand(-10, 10), hump.position.z + rand(-4, 4), 3 + i), i * 180); shake = Math.max(shake, .3); }
+function updateScares(dt) {
+  const e = SCARE.ev; R.lamp = 1;
+  if (!e) return;
+  e.t += dt;
+  if (e.k === 'figure') {
+    figure.position.y = H(figure.position.x, figure.position.z) - .1 + Math.sin(T * 1.3) * .05;
+    figLamp.material.color.setScalar(.5 + .5 * Math.sin(T * 9)).multiply(new THREE.Color(0x9dffc0));
+    const d = Math.hypot(figure.position.x - boat.pos.x, figure.position.z - boat.pos.z);
+    if (d < 24 || e.t > e.life) {
+      figure.visible = false; SCARE.ev = null; SFX.whisper(); corrPulse = .4;
+      toast(R.figSeen ? 'Era di nuovo lì. Poi non c\'era più.' : 'C\'era un uomo in piedi sull\'acqua. Con una lanterna verde. Non c\'è più.', 4.5); R.figSeen = true;
+    }
+  } else if (e.k === 'hand') {
+    const up = Math.min(1, e.t / .35), down = e.t > e.life - .5 ? (e.t - (e.life - .5)) / .5 : 0;
+    hand.position.y = .86 - (1 - up) * 2.6 - down * 3;
+    hand.userData.fingers.forEach((f, i) => f.rotation.z = -.9 - Math.sin(T * 14 + i) * .15 * up);
+    if (e.t > e.life) { hand.visible = false; boat.g.remove(hand); SCARE.ev = null; SFX.splash(); if (!R.handSeen) { R.handSeen = true; toast('Una mano. Grigia. Si era aggrappata alla Margaret.', 4.5); } }
+  } else if (e.k === 'hump') {
+    const k = e.t / e.life; hump.position.y = -6 + Math.sin(Math.min(1, k) * Math.PI) * 6.6; hump.position.x += Math.sin(hump.rotation.y + Math.PI / 2) * dt * 3; hump.position.z += Math.cos(hump.rotation.y + Math.PI / 2) * dt * 3;
+    if (e.t > e.life) { hump.visible = false; SCARE.ev = null; }
+  } else if (e.k === 'lamp') {
+    const t = e.t;
+    R.lamp = t < .8 ? (Math.random() < .5 ? .1 : 1) : t < 4.2 ? 0 : t < 5 ? (Math.random() < .5 ? 0 : 1) : 1;
+    if (t > .8 && !e.eyes) { e.eyes = true; R.eyesOn = true; R.eyesT = 0; SFX.heart(); setTimeout(SFX.heart, 800); setTimeout(SFX.heart, 1500); }
+    if (t > 4.2 && e.eyes && !e.off) { e.off = true; R.eyesOn = false; }
+    if (t > e.life) { SCARE.ev = null; if (!R.lampSeen) { R.lampSeen = true; toast('Nel buio, per un momento, ti guardavano in tanti.', 4); } }
+  }
+}
 function updateStory(dt) {
   if (mode !== 'sail' && mode !== 'fish') return;
+  scareDirector(dt);
   R.edgeT -= dt; R.dronePulse = Math.max(0, R.dronePulse - dt * .05);
   const dPort = Math.hypot(boat.pos.x - DOCK.x, boat.pos.z - DOCK.z);
   if (!S.flags.idolo && !(S.capitolo === 1 && S.giorno >= 3)) {
@@ -2457,7 +2616,7 @@ function frame(now) {
   const dt = Math.min((now - lastT) / 1000, .05); lastT = now; T += dt;
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   if (mode === 'fish' && !paused) updateFishing(dt);
-  updateBoat(dt); updateStory(dt); updateWorld(dt); updateCamera(dt);
+  updateBoat(dt); updateStory(dt); updateScares(dt); updateWorld(dt); updateCamera(dt);
   if (S && mode !== 'menu' && mode !== 'loading') updateHud(dt);
   audioUpdate(dt);
   glN++;
@@ -2552,7 +2711,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
    AVVIO
    ========================================================= */
 // strumenti di prova: apri index.html?debug
-if (location.search.includes('debug')) window.MN = { get S() { return S; }, set S(v) { S = v; }, get mode() { return mode; }, F, boat, SPOTS, FISH, startDay, startFishing, openPort, goHome, finale2, get clock() { return clock; }, set clock(v) { clock = v; } };
+if (location.search.includes('debug')) window.MN = { get S() { return S; }, set S(v) { S = v; }, get mode() { return mode; }, F, boat, SPOTS, FISH, startDay, startFishing, openPort, goHome, finale2, get clock() { return clock; }, set clock(v) { clock = v; }, scare: k => SCARES[k].run(), sub: () => subliminal() };
 requestAnimationFrame(frame);
 (async () => {
   await fbInit();
