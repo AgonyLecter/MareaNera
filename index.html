@@ -2154,17 +2154,18 @@ function objectives() {
   const far = { id: 'far', t: 'Spingiti al largo, oltre 150 m dal porto', done: !!R.far, mark: null };
   const dec = t => ({ id: 'dec', t, done: R.decisi > 0, mark: null });
   const jonah = t => ({ id: 'jonah', t, done: !!R.jonahTalk, mark: 'port' });
-  if (ch === 1 && d === 1) o.push(fish(4), sell);
-  else if (ch === 1 && d === 2) o.push(fish(5), far, sell, jonah('Parla con Jonah, in fondo al molo'));
+  if (ch === 1 && d === 1) o.push(fish(3), sell);
+  else if (ch === 1 && d === 2) o.push(fish(4), far, sell, jonah('Parla con Jonah, in fondo al molo'));
   else if (ch === 1 && d === 3) o.push(
     { id: 'fossa', t: 'Raggiungi la Fossa, oltre lo Scoglio Nero', done: !!(R.fossaIn || S.flags.idolo), mark: 'fossa' },
     { id: 'idol', t: 'Pesca alla Fossa', done: !!S.flags.idolo, mark: 'fossa' },
     { id: 'back', t: 'Torna al porto. Subito.', done: !!R.abelPost, mark: 'port' });
-  else if (ch === 2 && d === 4) o.push(fish(5), { id: 'nero', t: 'Parla con l\'uomo in nero, al porto', done: !!R.neroVisto, mark: 'port' }, dec('Decidi del pescato sbagliato: vendilo a lui o restituiscilo al mare'));
-  else if (ch === 2 && d === 5) o.push(jonah('Jonah è tornato: parlagli, al porto'), fish(6), far, dec('Decidi del pescato sbagliato'));
-  else if (ch === 2 && d === 6) o.push(fish(4), jonah('Parla con Jonah un\'ultima volta'), dec('L\'ultima scelta: vendi o restituisci il pescato sbagliato'));
+  else if (ch === 2 && d === 4) o.push(fish(4), { id: 'nero', t: 'Parla con l\'uomo in nero, al porto', done: !!R.neroVisto, mark: 'port' }, dec('Decidi del pescato sbagliato: vendilo a lui o restituiscilo al mare'));
+  else if (ch === 2 && d === 5) o.push(jonah('Jonah è tornato: parlagli, al porto'), fish(4), far, dec('Decidi del pescato sbagliato'));
+  else if (ch === 2 && d === 6) o.push(fish(3), jonah('Parla con Jonah un\'ultima volta'), dec('L\'ultima scelta: vendi o restituisci il pescato sbagliato'));
   if (ch === 2 && d < 6 && S.flags.idoloGettato !== d) o.push({ id: 'idolo', t: 'Puoi provare a gettare l\'idolo dal molo', done: false, opt: true, mark: null });
-  if (S.debito > 0 && ch <= 2) o.push({ id: 'debt', t: ch === 1 ? `Debito: ${S.debito} monete da pagare entro il Giorno III` : `Debito con la Compagnia: ${S.debito} monete`, done: false, opt: true, mark: null });
+  // il debito è parte del racconto, non un compito: lo si ricorda solo nel Capitolo I, quando ha una scadenza
+  if (S.debito > 0 && ch === 1) o.push({ id: 'debt', t: d < 3 ? `La Compagnia Marrow vuole ${S.debito} monete entro il Giorno III` : `Stasera arriva la Compagnia Marrow`, done: false, opt: true, mark: null });
   const main = o.filter(x => !x.opt);
   const allDone = main.every(x => x.done);
   if (allDone) o.splice(main.length, 0, { id: 'home', t: ch === 1 && d === 3 ? 'Vai a casa. Chiudi la porta a chiave.' : ch === 2 && d === 6 ? 'Vai a casa. Stanotte la Margaret ti porterà via.' : 'Torna al porto e vai a casa', done: false, mark: 'port' });
