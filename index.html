@@ -258,6 +258,7 @@ button{font-family:'IM Fell English SC',Georgia,serif;cursor:pointer;color:inher
   box-shadow:0 10px 30px #000;transform:rotate(-1.2deg);position:relative;
   -webkit-mask:var(--torn) center/100% 100%;mask:var(--torn) center/100% 100%}
 #note .paper:first-letter{font-family:'IM Fell English SC';font-size:2.4em;float:left;line-height:.9;margin:4px 6px 0 0;color:#5a1f12;font-style:normal}
+#note .paper.nocap:first-letter{font-family:inherit;font-size:inherit;float:none;margin:0;color:inherit;font-style:inherit;line-height:inherit}
 #note .sig{text-align:right;margin-top:12px;font-family:'IM Fell English SC'}
 #note .tap{text-align:center;color:var(--bone2);opacity:.6;margin-top:16px;font-size:14px;letter-spacing:3px;font-family:'IM Fell English SC'}
 
@@ -820,6 +821,7 @@ const SFX = {
   rumble: () => { burst(4, 70, 0.5, 0.7, 'lowpass', 0, 1); tone(36, 4, 'sine', 0.35, 0, 30); },
   whisper: () => { for (let i = 0; i < 14; i++) burst(rand(0.12, 0.35), rand(700, 2800), rand(4, 10), rand(0.03, 0.07), 'bandpass', i * rand(0.09, 0.17), 0.04); },
   sell: () => { tone(988, 0.1, 'triangle', 0.08); tone(1318, 0.18, 'triangle', 0.08, 0.07); },
+  step: (far) => { burst(.07, rand(240, 380), 1.2, far ? .09 : .15, 'lowpass'); if (!far) burst(.04, 1500, 2, .02, 'bandpass', .01); },
   knock: () => { burst(.22, 130, 1.4, .7, 'lowpass'); tone(52, .3, 'sine', .45); tone(78, .12, 'triangle', .12); },
   moan: (pan = 0, vol = 1) => {
     if (!AU.ctx) return; const C = AU.ctx, t = C.currentTime;
@@ -1029,6 +1031,8 @@ function makePerson(coat, sitting = false) {
 const WINDOWS = [];
 const landMat = M('#23251f'), rockMat = M('#2a2c2b'), woodMat = M('#3b2c20'), darkWood = M('#24190f');
 let uomoNero, stallLight, jonah, jonahLantern, jonahLight, abel, lighthouse = {};
+const HOUSEBOX = [], TOWN = {};
+const TOWN_FIX = [[15, 70, 11], [-30, 94, 10], [-60, 72, 13], [42, 120, 20], [15, 57, 6]];
 function buildPort() {
   const land = new THREE.Mesh(new THREE.BoxGeometry(1400, 8, 500), landMat); land.position.set(0, -2, 45 + 250); scene.add(land);
   // scogliera e sassi lungo la riva
@@ -1047,6 +1051,8 @@ function buildPort() {
   for (let i = 0; i < 26; i++) {
     const w = rand(6, 10), h = rand(5, 9), d = rand(6, 9);
     const x = rand(-120, 55), z = rand(60, 145); if (Math.abs(x + 8) < 12 && z < 70) continue;
+    if (TOWN_FIX.some(([fx, fz, fr]) => Math.hypot(x - fx, z - fz) < fr + Math.max(w, d) / 2)) continue;
+    HOUSEBOX.push({ x, z, hw: w / 2 + .9, hd: d / 2 + .9 });
     const g = new THREE.Group(); g.position.set(x, 2, z); g.rotation.y = rand(-.15, .15);
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(pick(hc))); b.position.y = h / 2; g.add(b);
     const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * .78, rand(3, 5), 4), M('#1c1816')); roof.rotation.y = Math.PI / 4; roof.position.y = h + 1.8; roof.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d)); g.add(roof);
@@ -1328,8 +1334,8 @@ function cardAdvance() {
 }
 $('card').addEventListener('pointerdown', e => { e.stopPropagation(); audioInit(); cardAdvance(); });
 
-function showNote(html, cb) {
-  paused = true; const n = $('note'); n.innerHTML = `<div><div class="paper">${html}</div><div class="tap">— tocca per chiudere —</div></div>`; n.classList.remove('hidden');
+function showNote(html, cb, cls = '') {
+  paused = true; const n = $('note'); n.innerHTML = `<div><div class="paper ${cls}">${html}</div><div class="tap">— tocca per chiudere —</div></div>`; n.classList.remove('hidden');
   n.onpointerdown = e => { e.stopPropagation(); n.classList.add('hidden'); paused = false; SFX.click(); if (cb) cb(); };
 }
 
@@ -1383,6 +1389,7 @@ function actionPress() {
   if (paused) return;
   actionHeld = true;
   if (mode === 'fish') { fishPress(); return; }
+  if (mode === 'walk') { walkAction(); return; }
   if (mode === 'sail') {
     const a = currentAction();
     if (a.k === 'fish') startFishing(a.spot);
@@ -1491,9 +1498,9 @@ function chooseFish() {
     if (S.giorno === 2 && !S.flags.denti && R.catches === 3) return 'denti';
     if (S.giorno === 3 && Math.random() < .5) { F.nothing = true; return null; }
     if (S.giorno >= 2 && Math.random() < (S.giorno === 2 ? .1 : .25)) return 'cieco';
-  } else if (S.capitolo === 2) {
+  } else if (S.capitolo >= 2) {
     if (!S.flags.primoMaledetto && R.catches === 1) { S.flags.primoMaledetto = true; return 'occhi'; }
-    const p = S.giorno === 4 ? .3 : S.giorno === 5 ? .45 : .62;
+    const p = S.capitolo >= 3 ? .35 : S.giorno === 4 ? .3 : S.giorno === 5 ? .45 : .62;
     if (Math.random() < p) return pick(CURSED);
   }
   if (Math.random() < .04) return 'stivale';
@@ -1731,32 +1738,34 @@ function readBottle() {
    STORIA
    ========================================================= */
 const DOCK_POS = () => { boat.pos.set(DOCK.x, 0, DOCK.z); boat.h = Math.PI; boat.v = 0; };
-const CHAP = { 1: { nome: 'Il Pescato', primo: 1, ultimo: 3 }, 2: { nome: 'La Stiva', primo: 4, ultimo: 6 }, 3: { nome: 'La Margaret' }, 4: { nome: 'Il Pescatore' }, 5: { nome: 'Ciò che Dorme Sotto la Fossa' } };
+const CHAP = { 1: { nome: 'Il Pescato', primo: 1, ultimo: 3 }, 2: { nome: 'La Stiva', primo: 4, ultimo: 6 }, 3: { nome: 'La Margaret', primo: 7, ultimo: 9 }, 4: { nome: 'Il Pescatore' }, 5: { nome: 'Ciò che Dorme Sotto la Fossa' } };
 const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const lastDay = () => CHAP[S.capitolo].ultimo || S.giorno;
 const cursedInHold = () => S.stiva.filter(it => FISH[it.k].cursed || it.k === 'annegato');
 function startDay(first = false) {
   resetRuntime(); SCARE.ev = null; figure.visible = false; hump.visible = false; hand.visible = false; boat.g.remove(hand); R.eyesOn = false; clock = 360; S.stiva = []; DOCK_POS(); mode = 'cut';
   if (S.capitolo === 1 && S.giorno === 3 && S.flags.idolo) delete S.flags.idolo;
-  if (S.capitolo === 2) delete S.flags.idolo;
+  if (S.capitolo >= 2) delete S.flags.idolo;
+  walker.visible = false;
   actEl.classList.remove('cursed');
   closePanel(); $('fishUI').classList.add('hidden'); bobber.visible = false; fishLine.visible = false;
   const d = S.giorno, ch = S.capitolo;
   // ambiente per giorno
-  const ENVD = { 1: [0, .8, .0042, .1, 0], 2: [.08, 1.05, .0062, .5, .35], 3: [.16, .35, .0075, .8, 0], 4: [.2, .9, .0062, .6, .15], 5: [.27, 1.25, .007, .75, .45], 6: [.34, .45, .0078, .85, 0] }[d] || [.3, .8, .007, .8, .2];
+  const ENVD = { 1: [0, .8, .0042, .1, 0], 2: [.08, 1.05, .0062, .5, .35], 3: [.16, .35, .0075, .8, 0], 4: [.2, .9, .0062, .6, .15], 5: [.27, 1.25, .007, .75, .45], 6: [.34, .45, .0078, .85, 0], 7: [.38, .7, .0075, .85, .2], 8: [.42, 1.1, .008, .9, .5], 9: [.5, .35, .009, .95, 0] }[d] || [.3, .8, .007, .8, .2];
   [corr, storm, scene.fog.density, R.overcast, rainAmt] = ENVD;
   monolith.visible = d >= 3;
-  jonah.visible = ch === 1 || d >= 5; jonahLantern.position.set(-6.6, 1.95, 18.4);
+  jonah.visible = ch === 1 || (ch === 2 && d >= 5); jonahLantern.position.set(-6.6, 1.95, 18.4);
   jonah.children[0].material.color.set(ch >= 2 ? '#26302c' : '#4b3a28');
-  if (ch === 2 && d === 4) jonahLantern.position.set(-6.2, 1.82, 19.5);
-  jonahLight.color.set(ch >= 2 && d >= 5 ? 0x9dffc0 : 0xffa850);
-  uomoNero.visible = ch === 2;
-  idolMesh.visible = ch >= 2; boat.hullMat.color.set(ch >= 2 ? '#30261c' : '#3b2a1e');
+  if ((ch === 2 && d === 4) || ch >= 3) jonahLantern.position.set(-6.2, 1.82, 19.5);
+  jonahLight.color.set((ch === 2 && d >= 5) || ch >= 3 ? 0x9dffc0 : 0xffa850);
+  uomoNero.visible = ch === 2 || ch === 3;
+  idolMesh.visible = ch >= 2; boat.hullMat.color.set(ch >= 3 ? '#3a2420' : ch >= 2 ? '#30261c' : '#3b2a1e');
   SPOTS.forEach(s => { if (!s.fossa) { placeSpot(s); } });
   fossaSpot.active = ch === 1 && d >= 3; fossaSpot.g.visible = fossaSpot.active;
   waterU.uFossaR.value = d >= 3 ? 55 : 0;
   // Capitolo II: il debito "matura"
   if (ch === 2 && !S.flags.ch2) { S.flags.ch2 = true; S.flags.debitoCh1 = !!S.flags.debitoPagato; S.debito = 250; delete S.flags.debitoPagato; }
+  if (ch === 3 && !S.flags.ch3) { S.flags.ch3 = true; S.debito = 0; }
   saveGame();
   setHud(true);
   const go = () => { mode = 'sail'; SFX.bell(); setHud(true); };
@@ -1822,6 +1831,8 @@ function startDay(first = false) {
         ['ABEL', `Che ce l'hai nella stiva come una malattia.`]
       ], go);
     });
+  } else if (d >= 7) {
+    startDay3(d, go);
   } else {
     const thrown = S.flags.idoloGettato === 5;
     const pro = S.scelte.nero > S.scelte.buttati;
@@ -1838,6 +1849,7 @@ function startDay(first = false) {
 }
 
 function dockBoat() {
+  if (S.capitolo === 3 && R.fossaNear) R.backFromFossa = true;
   mode = 'port'; boat.v = 0; DOCK_POS(); SFX.bell();
   if (S.flags.idolo && !R.abelPost) {
     R.abelPost = true; jonah.visible = false; jonahLantern.position.set(-6.2, 1.82, 19.5);
@@ -1865,8 +1877,9 @@ function openPort() {
     <div class="subt">Giorno ${S.giorno} · ${fmtClock()} · ${S.soldi} monete · debito ${S.debito}</div>
     <div class="btns">
       <button class="pbtn" id="pSell"><span>Banco di Abel: vendi</span><span class="r">${n} nella stiva</span></button>
-      ${ch === 2 ? `<button class="pbtn" id="pNero"><span>L'uomo in nero</span><span class="r">${nCur ? nCur + ' maledetti' : 'compra il triplo'}</span></button>` : ''}
-      ${ch === 2 && nCur ? `<button class="pbtn" id="pDump"><span>Restituisci al mare il pescato sbagliato</span><span class="r">${nCur}</span></button>` : ''}
+      ${ch === 3 ? `<button class="pbtn" id="pDiary"><span>La cabina della Margaret</span><span class="r">${(S.flags.diarioD || 0) < S.giorno ? 'nuove pagine' : 'il diario'}</span></button>` : ''}
+      ${ch === 2 || ch === 3 ? `<button class="pbtn" id="pNero"><span>L'uomo in nero</span><span class="r">${nCur ? nCur + ' maledetti' : 'compra il triplo'}</span></button>` : ''}
+      ${(ch === 2 || ch === 3) && nCur ? `<button class="pbtn" id="pDump"><span>Restituisci al mare il pescato sbagliato</span><span class="r">${nCur}</span></button>` : ''}
       <button class="pbtn" id="pShop"><span>Bottega del porto</span><span class="r">migliorie</span></button>
       <button class="pbtn" id="pDebt" ${S.debito <= 0 ? 'disabled' : ''}><span>Paga la Compagnia Marrow</span><span class="r">${S.debito > 0 ? S.debito + ' dovuti' : 'saldato'}</span></button>
       <button class="pbtn" id="pTalk"><span>${jonah.visible ? 'Parla con Jonah' : 'La lanterna di Jonah'}</span><span class="r">…</span></button>
@@ -1877,7 +1890,7 @@ function openPort() {
     </div>
     ${!canHome ? `<div class="note">${mustPay && S.debito > 0 && (ch === 2 || S.flags.idolo) ? `Prima di andare a casa devi pagare la Compagnia: mancano ${S.debito} monete.` : 'Non puoi tornare a casa a mani vuote. Non stasera.'}</div>` : ''}`);
   bind('pSell', openSell); bind('pShop', openShop); bind('pDebt', payDebt); bind('pTalk', talkJonah); bind('pBook', openBook);
-  bind('pNero', openNero); bind('pDump', dumpCursed); bind('pIdol', throwIdol);
+  bind('pNero', openNero); bind('pDiary', openDiary); bind('pDump', dumpCursed); bind('pIdol', throwIdol);
   bind('pHome', () => {
     if (!canHome) {
       closePanel();
@@ -2041,6 +2054,7 @@ function talkJonah() {
 }
 function goHome() {
   closePanel();
+  if (S.capitolo === 3 && S.giorno === 8 && !R.walkDone) { startWalk(); return; }
   if (S.giorno < lastDay()) {
     const lost = S.stiva.length; S.stiva = [];
     fadeTo(1, () => {
@@ -2048,12 +2062,13 @@ function goHome() {
       if (lost) toast(`Il pesce lasciato nella stiva è marcito.`);
       startDay();
     });
-  } else if (S.capitolo === 1) finale(); else finale2();
+  } else if (S.capitolo === 1) finale(); else if (S.capitolo === 2) finale2(); else finale3();
 }
 function lostAtNight() {
   if (S.capitolo === 2 && S.giorno >= 6 && S.debito <= 0) { finale2(); return; }
   mode = 'cut'; S.stiva = [];
   showCard([{ t: 'Il buio ti ha inghiottito.', c: 'sub' }, 'Ricordi solo la luce del faro, lontana, sempre più lontana.', 'E una voce, sotto la chiglia, che contava le tue assi.', { t: 'Ti svegli all\'alba, sul molo. Bagnato. La stiva è vuota.', c: 'sub' }], () => {
+    if (S.capitolo === 3 && S.giorno === 8 && !S.flags.walk8) { startWalk(); return; }
     S.giorno = Math.min(lastDay(), S.giorno + 1); saveGame(); startDay();
   });
 }
@@ -2157,8 +2172,9 @@ function finale2() {
 }
 function chapterBreak(n) {
   const c = CHAP[n];
-  if (n === 2) {
-    showCard([{ t: `Capitolo ${ROMAN[n]}`, c: 'sub' }, { t: c.nome.toUpperCase(), c: 'ttl' }, { t: 'Ogni giorno il pescato sarà più sbagliato.', c: 'sub' }], () => beginGame(), { step: 1100 });
+  if (c.ultimo) {
+    const tag = { 2: 'Ogni giorno il pescato sarà più sbagliato.', 3: 'La barca è viva. E sa dove vuole andare.' }[n] || '';
+    showCard([{ t: `Capitolo ${ROMAN[n]}`, c: 'sub' }, { t: c.nome.toUpperCase(), c: 'ttl' }, { t: tag, c: 'sub' }], () => beginGame(), { step: 1100 });
   } else {
     showCard([{ t: `Capitolo ${ROMAN[n]} — ${c.nome}`, c: 'sub' }, { t: 'Arriverà presto.', c: 'grn' }, { t: 'La tua partita è salvata. La Margaret ti aspetta.', c: 'sub' }], () => { fadeTo(0); showMenu(); }, { step: 1100 });
   }
@@ -2186,6 +2202,11 @@ const CARDS = [['N', 0, 1], ['E', -1, 0], ['S', 0, -1], ['O', 1, 0], ['NE', -.7,
 /* ---------- Obiettivi del giorno ---------- */
 function objectives() {
   const d = S.giorno, ch = S.capitolo, c = R.catches, o = [];
+  if (mode === 'walk' && R.walk) {
+    const w = R.walk, l = [{ id: 'w_c', t: 'Il cimitero, in cima alla collina', done: w.cimitero, mark: POI.cimitero }, { id: 'w_u', t: 'L\'ufficio della Compagnia Marrow', done: w.ufficio, mark: POI.ufficio }, { id: 'w_a', t: 'Bussa alla finestra di Abel', done: w.abel, mark: POI.abel }];
+    if (walkAllSeen()) l.push({ id: 'w_h', t: 'Torna a casa', done: false, mark: POI.casa });
+    return l;
+  }
   const fish = n => ({ id: 'fish' + n, t: `Pesca ${n} pesci`, b: `${Math.min(c, n)}/${n}`, done: c >= n, mark: 'spot' });
   const sell = { id: 'sell', t: 'Vendi il pescato al banco di Abel', done: !!R.sold, mark: 'port' };
   const far = { id: 'far', t: 'Spingiti al largo, oltre 150 m dal porto', done: !!R.far, mark: null };
@@ -2199,6 +2220,9 @@ function objectives() {
     { id: 'back', t: 'Torna al porto. Subito.', done: !!R.abelPost, mark: 'port' });
   else if (ch === 2 && d === 4) o.push(fish(4), { id: 'nero', t: 'Parla con l\'uomo in nero, al porto', done: !!R.neroVisto, mark: 'port' }, dec('Decidi del pescato sbagliato: vendilo a lui o restituiscilo al mare'));
   else if (ch === 2 && d === 5) o.push(jonah('Jonah è tornato: parlagli, al porto'), fish(4), far, dec('Decidi del pescato sbagliato'));
+  else if (ch === 3 && d === 7) o.push({ id: 'diario', t: 'Scendi nella cabina della Margaret', done: (S.flags.diarioD || 0) >= 7, mark: 'port' }, fish(4));
+  else if (ch === 3 && d === 8) o.push({ id: 'diario', t: 'Leggi le nuove pagine del diario, nella cabina', done: (S.flags.diarioD || 0) >= 8, mark: 'port' }, fish(3));
+  else if (ch === 3 && d === 9) o.push({ id: 'diario', t: 'Le ultime pagine del diario', done: (S.flags.diarioD || 0) >= 9, mark: 'port' }, fish(3), { id: 'scoglio', t: 'Lasciati portare fino allo Scoglio Nero', done: !!R.fossaNear, mark: 'fossa' }, { id: 'ritorno', t: 'Torna al porto, contro la Margaret', done: !!R.backFromFossa, mark: 'port' });
   else if (ch === 2 && d === 6) o.push(fish(3), jonah('Parla con Jonah un\'ultima volta'), dec('L\'ultima scelta: vendi o restituisci il pescato sbagliato'));
   if (ch === 2 && d < 6 && S.flags.idoloGettato !== d) o.push({ id: 'idolo', t: 'Puoi provare a gettare l\'idolo dal molo', done: false, opt: true, mark: null });
   // il debito è il cancello della storia: va saldato per chiudere il capitolo (Giorno III e Giorno VI)
@@ -2210,7 +2234,7 @@ function objectives() {
   }
   const main = o.filter(x => !x.opt);
   const allDone = main.every(x => x.done);
-  if (allDone) o.splice(main.length, 0, { id: 'home', t: ch === 1 && d === 3 ? 'Vai a casa. Chiudi la porta a chiave.' : ch === 2 && d === 6 ? 'Vai a casa. Stanotte la Margaret ti porterà via.' : 'Torna al porto e vai a casa', done: false, mark: 'port' });
+  if (allDone) o.splice(main.length, 0, { id: 'home', t: ch === 1 && d === 3 ? 'Vai a casa. Chiudi la porta a chiave.' : ch === 2 && d === 6 ? 'Vai a casa. Stanotte la Margaret ti porterà via.' : ch === 3 && d === 8 ? 'Vai a casa. Non riuscirai a dormire.' : ch === 3 && d === 9 ? 'Torna a casa. Ma prima, passa dal molo.' : 'Torna al porto e vai a casa', done: false, mark: 'port' });
   else if (!S.flags.idolo && !(ch === 1 && d === 3) && clock >= 1110) o.unshift({ id: 'late', t: 'Si fa buio: rientra in porto', done: false, mark: 'port', urg: true });
   return o;
 }
@@ -2239,14 +2263,14 @@ function updateCompass() {
   });
   const place = (m, tx, tz, show) => {
     if (!show) { if (m.e.style.opacity !== '0') m.e.style.opacity = 0; return; }
-    const dx = tx - boat.pos.x, dz = tz - boat.pos.z, a = ang(dx, dz);
+    const rp = mode === 'walk' ? WALK.p : boat.pos; const dx = tx - rp.x, dz = tz - rp.z, a = ang(dx, dz);
     const px = clamp(W / 2 + a / (Math.PI / 2) * W * .5, 26, W - 26);
     const edge = Math.abs(a) > Math.PI / 2 * .95 ? (a > 0 ? 'r' : 'l') : ''; if (m.e.dataset.edge !== edge) m.e.dataset.edge = edge;
     m.e.style.transform = `translate3d(${px.toFixed(1)}px,0,0)`; m.e.style.opacity = '';
     const dist = Math.round(Math.hypot(dx, dz) / 5) * 5; if (dist !== m.ld) { m.ld = dist; m.d.textContent = dist + 'm'; }
   };
   const t = CMP.tgt;
-  place(CMP.mk.port, DOCK.x, DOCK.z, true);
+  place(CMP.mk.port, DOCK.x, DOCK.z, mode !== 'walk');
   CMP.mk.port.e.classList.toggle('tgt', !!(t && t.k === 'port'));
   const m = CMP.mk.tgt;
   if (t && t.k !== 'port') {
@@ -2259,6 +2283,7 @@ function updateObjTarget(list) {
   const cur = list.find(x => !x.done && !x.opt && x.mark);
   if (!cur) { CMP.tgt = null; return; }
   if (cur.mark === 'port') CMP.tgt = { k: 'port' };
+  else if (typeof cur.mark === 'object') CMP.tgt = { k: 'fossa', x: cur.mark.x, z: cur.mark.z };
   else if (cur.mark === 'fossa') CMP.tgt = { k: 'fossa', x: FOSSA.x, z: FOSSA.z };
   else if (cur.mark === 'spot') {
     let best = null, bd = 1e9;
@@ -2267,28 +2292,29 @@ function updateObjTarget(list) {
   }
 }
 function updateHud(dt) {
-  if (mode === 'sail' || mode === 'fish' || mode === 'port') updateCompass();
+  if (mode === 'sail' || mode === 'fish' || mode === 'port' || mode === 'walk') updateCompass();
   hudT -= dt; if (hudT > 0) return; hudT = .15;
   const tl = $('hudTL');
   let slots = ''; for (let i = 0; i < capacity(); i++) { const it = S.stiva[i]; slots += `<i class="${it ? (FISH[it.k].cursed || it.k === 'annegato' ? 'x' : 'f') : ''}"></i>`; }
-  const objs = objectives(), showObj = mode === 'sail' || mode === 'fish' || mode === 'port';
+  const objs = objectives(), showObj = mode === 'sail' || mode === 'fish' || mode === 'port' || mode === 'walk';
   if (!R.objSeen) R.objSeen = {};
   for (const x of objs) if (x.done && !R.objSeen[x.id]) { R.objSeen[x.id] = 1; if (R.objReady) { setTimeout(() => { pop('Obiettivo compiuto'); SFX.perfect(); }, 300); } }
   R.objReady = true;
   updateObjTarget(objs);
   const hh = `<div class="hDay">Giorno <b>${ROMAN_N(S.giorno)}</b><span class="${isNight() ? 'n' : ''}">${fmtClock()}</span></div>
-    <div class="hMon"><b>${S.soldi}</b> monete · <i class="${S.debito > 0 ? '' : 'ok'}">${S.debito > 0 ? 'debito ' + S.debito : 'debito saldato'}</i></div><div class="hold">${slots}</div>` + (showObj ? objHTML(objs) : '');
+    <div class="hMon"><b>${S.soldi}</b> monete · ${S.capitolo >= 3 ? '<i>debito: un pescatore</i>' : `<i class="${S.debito > 0 ? '' : 'ok'}">${S.debito > 0 ? 'debito ' + S.debito : 'debito saldato'}</i>`}</div><div class="hold">${slots}</div>` + (showObj ? objHTML(objs) : '');
   if (hh !== lastHud) { tl.innerHTML = hh; lastHud = hh; }
   const cv = (Math.round(clamp(corr + corrPulse, 0, 1) * 20) / 20).toFixed(2); if (cv !== lastC) { document.documentElement.style.setProperty('--c', cv); lastC = cv; }
   // pulsante azione
-  $('joy').classList.toggle('hidden', !isTouch || mode !== 'sail');
+  $('joy').classList.toggle('hidden', !isTouch || (mode !== 'sail' && mode !== 'walk'));
   if (mode === 'sail') {
     const a = currentAction();
     actEl.classList.toggle('hidden', !a.k);
     if (a.k === 'dock') actEl.innerHTML = 'ATTRACCA' + (isTouch ? '' : '<small>spazio</small>');
     else if (a.k === 'fish') actEl.innerHTML = 'PESCA' + (isTouch ? '' : '<small>spazio</small>');
     else if (a.k === 'nofish') actEl.innerHTML = 'PESCA';
-  } else if (mode === 'fish') actEl.classList.toggle('hidden', F.phase === 'result');
+  } else if (mode === 'walk') { const k = walkNearPOI(); actEl.classList.toggle('hidden', !k); if (k) actEl.innerHTML = 'ESAMINA' + (isTouch ? '' : '<small>spazio</small>'); }
+  else if (mode === 'fish') actEl.classList.toggle('hidden', F.phase === 'result');
   else actEl.classList.add('hidden');
 }
 
@@ -2305,6 +2331,14 @@ function updateBoat(dt) {
     if (Math.abs(joy.y) < .15 && isTouch && Math.abs(joy.x) > .2 && !keys.KeyW) thr = Math.max(thr, .25);
   }
   if (mode === 'drift') thr = .12;
+  if (S && S.capitolo === 3 && mode === 'sail' && !paused) {
+    const dx = FOSSA.x - boat.pos.x, dz = FOSSA.z - boat.pos.z, dl = Math.hypot(dx, dz) || 1;
+    const dDock = Math.hypot(boat.pos.x - DOCK.x, boat.pos.z - DOCK.z);
+    const pull = ({ 7: 1.2, 8: 2, 9: 3 }[S.giorno] || 1.5) * clamp((dDock - 12) / 40, 0, 1) * Math.min(1, dl / 40);
+    boat.pos.x += dx / dl * pull * dt; boat.pos.z += dz / dl * pull * dt;
+    let da = Math.atan2(dx, dz) - boat.h; da = Math.atan2(Math.sin(da), Math.cos(da));
+    if (R.rebel > 0) { turn = 0; thr = Math.max(thr, .55); boat.h += da * 1.4 * dt; } else boat.h += da * .05 * pull * dt;
+  }
   const maxV = 13, target = thr >= 0 ? thr * maxV : thr * 4;
   boat.v += (target - boat.v) * (Math.abs(thr) > .05 ? .7 : .4) * dt;
   const steer = turn * (.45 + Math.min(Math.abs(boat.v) / maxV, 1) * .85) * (boat.v < -0.5 ? -1 : 1);
@@ -2336,6 +2370,10 @@ function updateCamera(dt) {
   const f = fwdVec(), r = rightVec(), p = boat.g.position;
   if (mode === 'menu' || mode === 'loading') {
     menuAng += dt * .05; camGoal.set(p.x + Math.cos(menuAng) * 22, 7 + Math.sin(menuAng * .7) * 1.5, p.z - 18 + Math.sin(menuAng) * 12); lookGoal.set(p.x, 3, p.z + 10);
+  } else if (mode === 'walk') {
+    const wf = walkFwd(); camGoal.copy(WALK.p).addScaledVector(wf, -5.4); camGoal.y = WALK.p.y + 3.4; lookGoal.copy(WALK.p).addScaledVector(wf, 3); lookGoal.y = WALK.p.y + 1.4;
+  } else if (mode === 'reflect') {
+    camGoal.set(-6, 4.2, 22); lookGoal.set(-6, 0, 12);
   } else if (mode === 'port' || mode === 'end') {
     camGoal.set(14, 9, 12); lookGoal.set(-8, 3, 36);
   } else if (mode === 'fish') {
@@ -2366,6 +2404,7 @@ function updateWorld(dt) {
   scene.fog.color.copy(ENV.hor).multiplyScalar(.92);
   sun.color.copy(ENV.sunC); sun.intensity = ENV.sunI * 1.4; sun.position.copy(boat.pos).addScaledVector(ENV.dir, 100); sun.target.position.copy(boat.pos);
   hemi.intensity = ENV.hemiI; hemi.color.copy(ENV.top).lerp(new THREE.Color('#9aa8b8'), .5);
+  if (mode === 'walk') { hemi.intensity = .75; hemi.color.set(0x8494a8); sun.color.set(0x9fb4d0); sun.intensity = .55; sun.position.copy(WALK.p).add(new THREE.Vector3(-40, 70, -30)); sun.target.position.copy(WALK.p); }
   // acqua
   const step = WSIZE / SEG; water.position.set(Math.round(camera.position.x / step) * step, 0, Math.round(camera.position.z / step) * step);
   waterU.uTime.value = T; waterU.uStorm.value = storm; waterU.uSky.value.copy(ENV.hor); waterU.uSunDir.value.copy(ENV.dir); waterU.uSunCol.value.copy(ENV.sunC).multiplyScalar(ENV.sunI);
@@ -2375,6 +2414,7 @@ function updateWorld(dt) {
   const lanI = (R.lamp ?? 1) * (night ? 1 : .35) * (1 + S.upgrade.lanterna * .6) * (1 + Math.sin(T * 13) * .04 + Math.sin(T * 7.3) * .03);
   waterU.uLanternI.value = lanI; boatLight.intensity = 8 * lanI; boatLight.distance = 20 + S.upgrade.lanterna * 10;
   boatLight.color.set(S.flags.idolo ? 0x7dffb0 : 0xffa050); boatLamp.material.color.set(S.flags.idolo ? 0x9dffc0 : 0xffb060); if ((R.lamp ?? 1) < .5) boatLamp.material.color.set(0x110a05);
+  { const pz = S.capitolo >= 3 ? Math.pow(Math.max(0, Math.sin(T * 2.6)), 8) : 0; boat.hullMat.emissive.setRGB(.35 * pz, .06 * pz, .04 * pz); }
   // faro
   lighthouse.pivot.rotation.y += dt * .7;
   let beam = night || S.giorno >= 2 ? 1 : .35;
@@ -2442,7 +2482,7 @@ function updateWorld(dt) {
    ========================================================= */
 function scareLevel() {
   const d = S.giorno, ch = S.capitolo;
-  let L = ch === 1 ? [0, 0, 1, 2][d] || 0 : ch === 2 ? { 4: 2, 5: 3, 6: 4 }[d] || 3 : 3;
+  let L = ch === 1 ? [0, 0, 1, 2][d] || 0 : ch === 2 ? { 4: 2, 5: 3, 6: 4 }[d] || 3 : { 7: 3, 8: 3, 9: 4 }[d] || 3;
   if (S.flags.idolo) L = 4;
   return L;
 }
@@ -2568,6 +2608,226 @@ function updateScares(dt) {
     if (t > e.life) { SCARE.ev = null; if (!R.lampSeen) { R.lampSeen = true; toast('Nel buio, per un momento, ti guardavano in tanti.', 4); } }
   }
 }
+/* =========================================================
+   CAPITOLO III — LA MARGARET
+   La barca è viva e tira verso la Fossa. Il diario del padre.
+   Di notte, a piedi, per il paese: il cimitero, la Compagnia, Abel.
+   ========================================================= */
+const POI = {
+  casa:     { x: 15, z: 63, label: 'Casa tua' },
+  cimitero: { x: 42, z: 106, label: 'Il cimitero' },
+  ufficio:  { x: -60, z: 64.5, label: 'La Compagnia Marrow' },
+  abel:     { x: -30, z: 87.5, label: 'La finestra di Abel' }
+};
+// --- edifici del paese che non cambiano mai posto ---
+(function buildTown() {
+  const house = (x, z, w, h, d, col, door = true) => {
+    const g = new THREE.Group(); g.position.set(x, 2, z);
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(col)); b.position.y = h / 2; g.add(b);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * .78, 4, 4), M('#1a1614')); roof.rotation.y = Math.PI / 4; roof.position.y = h + 1.8; roof.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d)); g.add(roof);
+    if (door) { const dr = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.3), M('#1a120c')); dr.position.set(0, 1.15, -d / 2 - .02); dr.rotation.y = Math.PI; g.add(dr); }
+    scene.add(g); HOUSEBOX.push({ x, z, hw: w / 2 + .7, hd: d / 2 + .7 }); return g;
+  };
+  // casa tua: sul davanzale, l'idolo
+  const casa = house(15, 70, 8, 6, 7, '#3a3632');
+  const wm = new THREE.MeshBasicMaterial({ color: 0x1a2a20 }); const w = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.3), wm); w.position.set(2.4, 3.6, -3.52); w.rotation.y = Math.PI; casa.add(w);
+  const idl = new THREE.Mesh(new THREE.DodecahedronGeometry(.18, 0), new THREE.MeshBasicMaterial({ color: 0x5dffa0 })); idl.position.set(2.4, 3.05, -3.6); casa.add(idl);
+  TOWN.casaIdol = idl; TOWN.casaWin = wm;
+  // casa di Abel: una finestra con la candela
+  const ab = house(-30, 94, 9, 6, 7, '#45403a');
+  TOWN.abelWin = new THREE.MeshBasicMaterial({ color: 0xffb25a }); const aw = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.5), TOWN.abelWin); aw.position.set(-2, 3.4, -3.52); aw.rotation.y = Math.PI; ab.add(aw);
+  // la Compagnia Marrow
+  const of = house(-60, 72, 13, 8, 10, '#26292a');
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const g2 = cv.getContext('2d');
+  g2.fillStyle = '#1a120c'; g2.fillRect(0, 0, 512, 96); g2.strokeStyle = '#8a6a3a'; g2.lineWidth = 4; g2.strokeRect(6, 6, 500, 84);
+  g2.fillStyle = '#c9b48a'; g2.font = 'bold 44px Georgia, serif'; g2.textAlign = 'center'; g2.fillText('COMPAGNIA MARROW', 256, 62);
+  const st = new THREE.CanvasTexture(cv); st.colorSpace = THREE.SRGBColorSpace;
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.1), new THREE.MeshBasicMaterial({ map: st, color: 0x8a8070 })); sign.position.set(0, 3.4, -5.03); sign.rotation.y = Math.PI; of.add(sign);
+  TOWN.offWin = new THREE.MeshBasicMaterial({ color: 0x3a8a5a }); const ow = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), TOWN.offWin); ow.position.set(3.6, 2.4, -5.03); ow.rotation.y = Math.PI; of.add(ow);
+  // il cimitero sulla collina
+  const cg = new THREE.Group(); cg.position.set(42, 2, 120); const stone = M('#4a4c48'), wall = M('#2c2e2b');
+  for (const [x, z, w2, d2] of [[0, -11, 24, .6], [0, 11, 24, .6], [-12, 0, .6, 22], [12, 0, .6, 22]]) { if (z === -11) { for (const sx of [-7.5, 7.5]) { const m = new THREE.Mesh(new THREE.BoxGeometry(9, 1, .6), wall); m.position.set(sx, .5, z); cg.add(m); } continue; } const m = new THREE.Mesh(new THREE.BoxGeometry(w2, 1, d2), wall); m.position.set(x, .5, z); cg.add(m); }
+  for (let i = 0; i < 10; i++) { const t = new THREE.Mesh(new THREE.BoxGeometry(.9, 1.3 + Math.random() * .4, .2), stone); t.position.set(-8 + (i % 5) * 4, .7, -2 + Math.floor(i / 5) * 6); t.rotation.set(rand(-.08, .08), rand(-.1, .1), rand(-.12, .12)); cg.add(t); }
+  const fresh = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, .22), M('#d8d4c8', { emissive: 0x2a4a38 })); fresh.position.set(8, .75, 8); cg.add(fresh); TOWN.fresh = fresh;
+  const fl = new THREE.PointLight(0x7dffb0, 0, 16, 1.4); fl.position.set(8, 2, 7); cg.add(fl); TOWN.freshLight = fl;
+  const pit = new THREE.Mesh(new THREE.BoxGeometry(1.4, .05, 2.4), M('#0a0806')); pit.position.set(8, .03, 6.4); cg.add(pit);
+  const tr = new THREE.Mesh(new THREE.CylinderGeometry(.2, .35, 7, 5), M('#1a1612')); tr.position.set(-9, 3.5, 8); cg.add(tr);
+  for (let i = 0; i < 5; i++) { const br = new THREE.Mesh(new THREE.CylinderGeometry(.04, .12, 3, 4), M('#1a1612')); br.position.set(-9, 4.5 + i * .5, 8); br.rotation.set(rand(-1, 1), rand(0, 6), rand(.6, 1.2)); cg.add(br); }
+  scene.add(cg);
+  for (const [x, z, w2, d2] of [[42, 109, 24, 1.4], [42, 131, 24, 1.4], [30, 120, 1.4, 22], [54, 120, 1.4, 22]]) if (z !== 109) HOUSEBOX.push({ x, z, hw: w2 / 2, hd: d2 / 2 });
+  HOUSEBOX.push({ x: 36.5, z: 109, hw: 4.5, hd: .9 }, { x: 47.5, z: 109, hw: 4.5, hd: .9 }, { x: -14, z: 51, hw: 3, hd: 1.2 });
+})();
+
+/* ---------- a piedi ---------- */
+const walker = makePerson('#262c33'); walker.visible = false; scene.add(walker);
+const wLamp = new THREE.Mesh(new THREE.SphereGeometry(.13, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc070 })); wLamp.position.set(.42, 1.0, .25); walker.add(wLamp);
+const wLight = new THREE.PointLight(0xffa850, 22, 26, 1.2); wLight.position.set(.42, 1.3, .3); walker.add(wLight);
+const WALK = { p: new THREE.Vector3(15, 2, 60), h: 0, stepT: 0, moving: false };
+const walkFwd = () => new THREE.Vector3(Math.sin(WALK.h), 0, Math.cos(WALK.h));
+function walkNearPOI() {
+  if (!R.walk) return null;
+  let best = null, bd = 4.2;
+  for (const k in POI) { if (k === 'casa' && !walkAllSeen()) continue; if (k !== 'casa' && R.walk[k]) continue; const d = Math.hypot(WALK.p.x - POI[k].x, WALK.p.z - POI[k].z); if (d < bd) { bd = d; best = k; } }
+  return best;
+}
+const walkAllSeen = () => R.walk && R.walk.cimitero && R.walk.ufficio && R.walk.abel;
+function startWalk() {
+  closePanel(); mode = 'cut'; setHud(false);
+  fadeTo(1, () => {
+    clock = 1392; corr = Math.max(corr, .42); storm = .5; rainAmt = .25; scene.fog.density = .011; R.overcast = .9; R.beamOn = true;
+    R.walk = { cimitero: false, ufficio: false, abel: false }; R.wsT = rand(14, 22);
+    WALK.p.set(15, 2, 60); WALK.h = 0; walker.visible = true; boat.v = 0; DOCK_POS();
+    TOWN.abelWin.color.set(0xffb25a);
+    camera.position.set(15, 6, 52);
+    showCard([{ t: 'Non riesci a dormire.', c: 'sub' }, 'Dal porto, la Margaret batte contro il molo. Piano. Come chi bussa.', 'Non ci vai. Prendi la lanterna di tuo padre ed esci, a piedi.', { t: 'Per la prima volta, il paese di notte.', c: 'grn' }], () => {
+      fadeTo(0); mode = 'walk'; setHud(true); SFX.bell();
+      toast(isTouch ? 'Joystick per camminare. Avvicinati ai luoghi segnati e premi ESAMINA.' : 'WASD per camminare. Avvicinati ai luoghi segnati e premi SPAZIO.', 5);
+    }, { step: 1700 });
+  }, 1200);
+}
+function updateWalk(dt) {
+  if (mode !== 'walk') { if (walker.visible && mode !== 'cut') walker.visible = false; if (TOWN.freshLight.intensity) TOWN.freshLight.intensity = 0; return; }
+  let thr = 0, turn = 0;
+  if (!paused) {
+    thr = clamp((keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) + joy.y, -1, 1);
+    turn = clamp((keys.KeyA || keys.ArrowLeft ? 1 : 0) - (keys.KeyD || keys.ArrowRight ? 1 : 0) - joy.x, -1, 1);
+  }
+  WALK.h += turn * 2.1 * dt;
+  const sp = (thr >= 0 ? 3.6 : 2) * thr; const f = walkFwd();
+  WALK.p.addScaledVector(f, sp * dt);
+  WALK.p.x = clamp(WALK.p.x, -125, 62); WALK.p.z = clamp(WALK.p.z, 50, 150);
+  for (const b of HOUSEBOX) {
+    const dx = WALK.p.x - b.x, dz = WALK.p.z - b.z;
+    if (Math.abs(dx) < b.hw && Math.abs(dz) < b.hd) { const ox = b.hw - Math.abs(dx), oz = b.hd - Math.abs(dz); if (ox < oz) WALK.p.x = b.x + Math.sign(dx || 1) * b.hw; else WALK.p.z = b.z + Math.sign(dz || 1) * b.hd; }
+  }
+  WALK.moving = Math.abs(sp) > .3;
+  walker.position.set(WALK.p.x, 2 + (WALK.moving ? Math.abs(Math.sin(T * 7)) * .06 : 0), WALK.p.z); walker.rotation.y = WALK.h;
+  if (WALK.moving) { WALK.stepT -= dt; if (WALK.stepT <= 0) { WALK.stepT = .42; SFX.step(); } }
+  wLight.intensity = 22 * (1 + Math.sin(T * 13) * .05) * (R.wFlick > 0 ? (Math.random() < .5 ? .05 : 1) : 1); if (R.wFlick > 0) R.wFlick -= dt;
+  TOWN.casaIdol.material.color.setRGB(.2, .7 + .3 * Math.sin(T * 2.2), .4);
+  TOWN.freshLight.intensity = 5 + Math.sin(T * 1.7) * 1.5;
+  // paure del paese
+  if (!paused && !DLG.open && !CARD.open) {
+    R.wsT -= dt;
+    if (R.wsT < 0) {
+      R.wsT = rand(16, 26); const k = pick(['steps', 'figure', 'knock', 'flicker', 'whisper'].filter(x => x !== R.wsLast)); R.wsLast = k;
+      if (k === 'steps') { [0, .42, .84].forEach(t => setTimeout(() => SFX.step(true), 400 + t * 1000)); setTimeout(() => toast('Passi. Dietro di te. Si fermano quando ti fermi tu.', 4), 1800); }
+      else if (k === 'figure') { const p = WALK.p.clone().addScaledVector(walkFwd(), 20); if (!HOUSEBOX.some(b => Math.abs(p.x - b.x) < b.hw && Math.abs(p.z - b.z) < b.hd)) { figure.position.set(p.x, 2, p.z); figure.lookAt(WALK.p.x, 2, WALK.p.z); figure.visible = true; SFX.breath(); setTimeout(() => { figure.visible = false; SFX.whisper(); toast('In fondo alla strada c\'era qualcuno. Gocciolava.', 4); }, 2600); } }
+      else if (k === 'knock') { [0, .5, 1].forEach(t => setTimeout(SFX.knock, t * 1000)); setTimeout(() => toast('Qualcuno bussa. Da dentro una casa con le finestre murate.', 4), 1400); }
+      else if (k === 'flicker') { R.wFlick = 1.6; SFX.sputter(); }
+      else { whisper(pick(['Anche lui camminava così.', 'Il cimitero, ' + S.nome + '.', 'Ti abbiamo fatto un posto.']), 2800); }
+    }
+  }
+}
+function walkAction() {
+  const k = walkNearPOI(); if (!k) return;
+  if (k === 'cimitero') {
+    R.walk.cimitero = true; SFX.weird();
+    say([
+      ['TU', `Le lapidi più vecchie sono coperte di licheni. Leggo i nomi con la lanterna.`],
+      ['TU', `«JOSIAH ASHCOMBE, 1844. Disperso in mare.»`],
+      ['TU', `«THOMAS ASHCOMBE, 1871. Disperso in mare.»`],
+      ['TU', `«ELIAS MARSH, 1898. Disperso in mare. Per Margaret.»`],
+      ['TU', `«WILLIAM ASHCOMBE, 1926. Disperso in mare.» Papà.`],
+      ['TU', `Tutte tombe vuote. Una per generazione.`],
+      ['TU', `In fondo c'è una lapide nuova. La pietra è ancora bianca. Davanti, una fossa già scavata.`]
+    ], () => { SFX.stinger(); shake = .6; flash(.25); say([['TU', `C'è inciso il mio nome. «${S.nome.toUpperCase()} ASHCOMBE. 1927.»`], ['TU', `Nessuno in paese sa scolpire la pietra.`]]); });
+  } else if (k === 'ufficio') {
+    R.walk.ufficio = true; S.flags.registro = true; SFX.weird();
+    say([['TU', `La porta è chiusa. Dalla finestra si vede una lampada verde accesa, e un registro aperto sulla scrivania.`]], () => showNote(`
+      <b style="font-style:normal;font-family:'IM Fell English SC'">Compagnia Marrow</b> — <i>già Marsh &amp; Figli</i><br>Conto Ashcombe<br><br>
+      Rata 1844 — Josiah Ashcombe. <i>Saldata.</i><br>Rata 1871 — Thomas Ashcombe. <i>Saldata.</i><br>
+      Rata 1898 — Elias Marsh, in luogo di Margaret Ashcombe. <i>Saldata.</i><br>Rata 1926 — William Ashcombe. <i>Sceso. Non sufficiente.</i><br>
+      Rata 1927 — <span style="font-family:cursive;color:#3a3a3a">${esc(S.nome)}</span>
+      <div class="sig">— tenuto da H. Marrow</div>`, () => say([['TU', `Marsh. Marrow. Hanno solo cambiato nome.`], ['TU', `E il debito non è mai stato di soldi. Ogni generazione, uno di noi al mare.`], ['TU', `La rata di quest'anno sono io.`]])));
+  } else if (k === 'abel') {
+    R.walk.abel = true;
+    say([
+      ['TU', `Busso al vetro. La candela trema.`],
+      ['ABEL', `{nome}? Sei tu? Che ci fai in giro a quest'ora?`],
+      ['ABEL', `...L'ultima notte anche tuo padre è venuto qui. Ha bussato proprio così.`],
+      ['ABEL', `Io non gli ho aperto. Avevo paura. Me lo porto dietro da un anno.`],
+      ['ABEL', `E non aprirò nemmeno a te. Perdonami, {nome}. Torna a casa.`]
+    ], () => { TOU_abel(); });
+  } else if (k === 'casa') {
+    closePanel(); mode = 'cut';
+    showCard([{ t: 'Rientri. Chiudi la porta.', c: 'sub' }, 'Sul davanzale, l\'idolo è girato verso l\'ingresso.', { t: 'Verso di te. Ti stava aspettando.', c: 'grn', sfx: 'heart' }], () => {
+      walker.visible = false; R.walkDone = true; S.flags.walk8 = true; goHome();
+    }, { step: 1600 });
+  }
+}
+function TOU_abel() { SFX.sputter(); setTimeout(() => TOWN.abelWin.color.set(0x0d0c0a), 300); }
+
+/* ---------- il diario di tuo padre ---------- */
+const DIARIO = [
+  `<i>3 marzo 1926.</i><br>L'ho tirato su alla Fossa, come raccontava il vecchio Jonah. Una pietra verde, tiepida, con troppe braccia.<br>Sapevo cosa avrei trovato. Ci sono andato lo stesso: la Compagnia vuole i suoi soldi, e {nome} ha bisogno di scarpe nuove.`,
+  `<i>9 marzo.</i><br>La Margaret è calda. Di notte, se appoggio la mano sullo scafo, sento qualcosa che batte. Non è il motore: il motore è spento.<br>Ho provato a ributtare la pietra in mare. La mattina era di nuovo in stiva. Asciutta.`,
+  `<i>17 marzo.</i><br>Sono andato dal signor Marrow a chiedere una proroga. Nel suo ufficio c'è un ritratto: un uomo con la barba, la sua stessa faccia. Sotto, una targhetta: <b>E. MARSH, 1898</b>.<br>«Mio nonno», ha detto sorridendo. «Lo prese il mare. Come tutti i buoni pescatori.»`,
+  `<i>24 marzo.</i><br>Marsh e Marrow sono la stessa famiglia. Hanno cambiato nome nel 1899, dopo la Ruth.<br>E il debito, {nome}, non è mai stato di soldi. Ogni generazione, un Ashcombe al mare. Lo dice il loro registro.<br>Io sono la rata di quest'anno.`,
+  `<i>2 aprile.</i><br>Domani scendo. Non è annegare: è <b>scendere</b>. Me lo hanno spiegato le voci sotto lo scafo.<br>Laggiù c'è una città, e ci sono tutti: il nonno, Elias, gli altri. Mi hanno promesso che se scendo io, tu sarai libero.<br>Se stai leggendo questo, mi hanno mentito. Perdonami.`,
+  `<span style="opacity:.75">L'inchiostro è colato. Si legge solo l'ultima riga, scritta più grande, con un'altra mano:</span><br><br><b>Non guardare nell'acqua di notte.<br>Se lo fai, io ti guarderò. E non saprò fare a meno di sorriderti.</b>`
+];
+function openDiary() {
+  closePanel();
+  const upto = { 7: 2, 8: 4, 9: 6 }[S.giorno] || 6, from = S.flags.diarioPag || 0;
+  const pages = []; for (let i = 0; i < upto; i++) pages.push(i);
+  let i = from < upto ? from : 0;
+  const show = () => {
+    showNote(`<div style="text-align:center;font-family:'IM Fell English SC';font-style:normal;font-size:.8em;opacity:.7;margin-bottom:8px">Diario di William Ashcombe — pagina ${i + 1}</div>${DIARIO[i].replace(/\{nome\}/g, esc(S.nome))}`, () => {
+      S.flags.diarioPag = Math.max(S.flags.diarioPag || 0, i + 1);
+      if (i === 5) { SFX.stinger(); }
+      i++;
+      if (i < upto) show();
+      else { S.flags.diarioD = S.giorno; saveGame(); say([['TU', S.giorno === 7 ? `La sua scrittura. Le sue parole. Come se fosse qui, nella cabina, a leggermele.` : S.giorno === 8 ? `Il registro. Devo vederlo con i miei occhi.` : `Sceso. Non annegato. Sceso.`]], openPort); }
+    }, 'nocap');
+    $('note').querySelector('.tap').textContent = i + 1 < upto ? '— tocca per la pagina successiva —' : '— tocca per chiudere il diario —';
+    SFX.click();
+  };
+  if (from >= upto) i = Math.max(0, upto - 2);
+  show();
+}
+
+/* ---------- fine del Capitolo III: il riflesso ---------- */
+function finale3() {
+  mode = 'end'; setHud(false); closePanel(); R.silence = true;
+  fadeTo(1, () => {
+    mode = 'reflect'; clock = 1400; corr = .6; storm = .03; rainAmt = 0; scene.fog.density = .01; R.beamOn = false; walker.visible = false;
+    fadeTo(0);
+    say([['TU', `Prima di rientrare mi fermo in fondo al molo.`], ['TU', `L'acqua è ferma. Non l'ho mai vista così ferma. Sembra vetro.`], ['TU', `Mi chino a guardare.`]], () => {
+      flash(.3); SFX.stinger(); subliminal();
+      showCard(['Nel riflesso non c\'eri tu.', { t: 'C\'era tuo padre.', c: 'grn', sfx: 'heart' }, { t: 'Bagnato, pallido, con gli occhi aperti.', c: 'sub' }, { t: 'Ti sorrideva.', c: 'grn' }, 'Ha alzato una mano, piano, come per salutarti.', { t: 'E la tua mano, sopra l\'acqua, ha fatto lo stesso.', c: 'grn', sfx: 'stinger' }], () => {
+        S.capitolo = 4; S.giorno = 10; S.flags.capitolo3 = true; S.stiva = []; saveGame();
+        fbPush('dispersi', { nome: S.nome, capitolo: 3, ts: Date.now() });
+        showCard([{ t: 'Capitolo III', c: 'sub' }, { t: 'LA MARGARET', c: 'ttl' }, { t: 'Tuo padre non è annegato. È sceso.', c: 'sub' }, { t: 'E ti sta aspettando.', c: 'grn' }], () => { R.silence = false; chapterBreak(4); }, { step: 1400 });
+      }, { step: 2100 });
+    });
+  }, 1500);
+}
+function startDay3(d, go) {
+  if (d === 7) {
+    showCard([{ t: 'Giorno 7', c: 'ttl' }, { t: 'Ti sei svegliato sul molo, all\'alba, con le mani piene di sale.', c: 'sub' }, { t: 'La Margaret era ormeggiata. Nessuno l\'aveva legata.', c: 'grn' }], () => say([
+      ['ABEL', `Ti ho visto rientrare, stanotte. Al timone non c'era nessuno, {nome}. Nessuno.`],
+      ['ABEL', `E la lanterna di Jonah è ancora sul molo. Accesa. Ma adesso fa una luce verde.`],
+      ['UOMO IN NERO', `La seconda rata è saldata. La Compagnia ringrazia.`],
+      ['UOMO IN NERO', `La terza non si paga in monete, {nome}. Ma di questo parleremo con calma.`],
+      ['TU', `(Appoggio la mano sullo scafo della Margaret. Il legno è caldo. Caldo come una schiena.)`],
+      ['TU', `(Nella cabina c'è una cassetta che non avevo mai visto. C'è inciso il nome di mio padre.)`]
+    ], go));
+  } else if (d === 8) {
+    showCard([{ t: 'Giorno 8', c: 'ttl' }, { t: 'Stanotte la Margaret ha strattonato gli ormeggi fino all\'alba.', c: 'sub' }, { t: 'Le corde sono consumate, come se qualcuno le avesse rosicchiate.', c: 'sub' }], () => say([
+      ['ABEL', `Il porto dorme male, da quando sei tornato. Di notte si sentono passi sul molo. Passi bagnati.`],
+      ['UOMO IN NERO', `Suo padre teneva un diario, vero? Lo legga pure.`],
+      ['UOMO IN NERO', `Non le dirà niente che la Compagnia non sappia già.`]
+    ], go));
+  } else {
+    showCard([{ t: 'Giorno 9', c: 'ttl' }, { t: 'Il mare è immobile, e senza colore.', c: 'sub' }, { t: 'La Margaret ti aspetta con la prua già girata verso la Fossa.', c: 'grn' }], () => say([
+      ['ABEL', S.flags.walk8 ? `Ho visto la lapide nuova, {nome}. Nessuno del paese l'ha scolpita. Te lo giuro su mia madre.` : `Hai una brutta faccia, {nome}. Come tuo padre, l'ultima settimana.`],
+      ['UOMO IN NERO', `Oggi la lasci andare dove vuole, la sua barca. Le conviene. Fa meno male.`],
+      ['TU', `(Le ultime pagine del diario sono ancora nella cassetta. Mio padre le ha scritte il giorno prima di scendere.)`]
+    ], go));
+  }
+}
+
 function updateStory(dt) {
   if (mode !== 'sail' && mode !== 'fish') return;
   scareDirector(dt);
@@ -2591,6 +2851,15 @@ function updateStory(dt) {
   if (S.capitolo === 2 && cursedInHold().length) {
     R.whisperT -= dt;
     if (R.whisperT < 0) { R.whisperT = rand(28, 50); whisper(pick(['Portaci da Lui.', 'Siamo tanti, quaggiù.', '{nome}... {nome}...', 'Non venderci.', 'Fa freddo, nella stiva.', 'Tuo padre è qui con noi.']).replace(/\{nome\}/g, S.nome), 2800); corrPulse = .25; SFX.heart(); }
+  }
+  if (S.capitolo === 3) {
+    if (Math.hypot(boat.pos.x - FOSSA.x, boat.pos.z - FOSSA.z) < 130) R.fossaNear = true;
+    if (!R.pullTold && mode === 'sail') { R.pullTold = true; setTimeout(() => toast('La Margaret tira. Verso sud-ovest. Verso la Fossa.', 4.5), 1500); }
+    if (R.rebel > 0) R.rebel -= dt;
+    else if (mode === 'sail') {
+      R.rebelT = (R.rebelT ?? rand(25, 40)) - dt;
+      if (R.rebelT < 0 && dPort > 50) { R.rebelT = rand(30, 55) - S.giorno * 2; R.rebel = 3.2; SFX.heart(); SFX.hull(); shake = Math.max(shake, .3); toast(pick(['Il timone ti sfugge di mano. La Margaret gira da sola.', 'Il legno sotto le mani è caldo. E non ti obbedisce.', 'La barca vira. Non sei stato tu.']), 3.5); }
+    }
   }
   if (S.flags.idolo) {
     R.whisperT -= dt;
@@ -2616,7 +2885,7 @@ function frame(now) {
   const dt = Math.min((now - lastT) / 1000, .05); lastT = now; T += dt;
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   if (mode === 'fish' && !paused) updateFishing(dt);
-  updateBoat(dt); updateStory(dt); updateScares(dt); updateWorld(dt); updateCamera(dt);
+  updateBoat(dt); updateStory(dt); updateScares(dt); updateWalk(dt); updateWorld(dt); updateCamera(dt);
   if (S && mode !== 'menu' && mode !== 'loading') updateHud(dt);
   audioUpdate(dt);
   glN++;
@@ -2648,7 +2917,7 @@ async function showMenu() {
   if (playable && saved.giorno) { bc.classList.remove('hidden'); bc.textContent = `Continua — Cap. ${ROMAN[cap]}, Giorno ${saved.giorno}`; bn.textContent = 'Nuova partita'; bn.classList.add('sec'); }
   else { bc.classList.add('hidden'); bn.textContent = saved ? 'Nuova partita' : 'Salpa'; bn.classList.remove('sec'); }
   let msg = `«${CFG.messaggio}»`;
-  if (saved && cap >= 3) msg += `<br><br>Hai completato il Capitolo II. Il Capitolo III — <i>${CHAP[3].nome}</i> — arriverà presto. La tua partita è salvata.`;
+  if (saved && cap >= 4) msg += `<br><br>Hai completato il Capitolo III. Il Capitolo IV — <i>${CHAP[4].nome}</i> — arriverà presto. La tua partita è salvata.`;
   $('menuMsg').innerHTML = msg;
   $('btnFull').classList.toggle('hidden', !fsSupported);
 }
@@ -2711,7 +2980,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
    AVVIO
    ========================================================= */
 // strumenti di prova: apri index.html?debug
-if (location.search.includes('debug')) window.MN = { get S() { return S; }, set S(v) { S = v; }, get mode() { return mode; }, F, boat, SPOTS, FISH, startDay, startFishing, openPort, goHome, finale2, get clock() { return clock; }, set clock(v) { clock = v; }, scare: k => SCARES[k].run(), sub: () => subliminal() };
+if (location.search.includes('debug')) window.MN = { get S() { return S; }, set S(v) { S = v; }, get mode() { return mode; }, F, boat, SPOTS, FISH, startDay, startFishing, openPort, goHome, finale2, get clock() { return clock; }, set clock(v) { clock = v; }, scare: k => SCARES[k].run(), sub: () => subliminal(), startWalk: () => startWalk(), finale3: () => finale3(), openDiary: () => openDiary(), get WALK() { return WALK; }, get R() { return R; } };
 requestAnimationFrame(frame);
 (async () => {
   await fbInit();
